@@ -28,7 +28,7 @@ public class AppInit implements ApplicationListener<ContextRefreshedEvent> {
 
     private void startFixEngine() {
         try {
-            socketAcceptor.start();
+            //socketAcceptor.start();
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Exception: " + e);

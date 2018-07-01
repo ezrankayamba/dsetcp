@@ -11,5 +11,12 @@
         <module name="util" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="client" target="10" />
+      <module name="dsetcp" target="10" />
+      <module name="fixengine" target="1.5" />
+      <module name="server" target="10" />
+      <module name="util" target="10" />
+    </bytecodeTargetLevel>
   </component>
 </project>

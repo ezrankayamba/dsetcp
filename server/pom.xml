@@ -3,37 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>tz.co.nezatech</groupId>
-        <artifactId>fixengine</artifactId>
+        <artifactId>dsetcp</artifactId>
         <version>1.0</version>
     </parent>
     <artifactId>server</artifactId>
     <dependencies>
         <dependency>
-            <groupId>tz.co.nezatech</groupId>
+            <groupId>tz.co.nezatech.dsetcp</groupId>
             <artifactId>util</artifactId>
             <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>nz.net.ultraq.thymeleaf</groupId>
-            <artifactId>thymeleaf-layout-dialect</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.tess4j</groupId>
-            <artifactId>tess4j</artifactId>
-            <version>4.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

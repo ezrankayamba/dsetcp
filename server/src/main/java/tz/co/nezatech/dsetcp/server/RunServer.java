@@ -74,7 +74,7 @@ public class RunServer {
                         int avail = input.available();
                         if (avail != 0) {
                             logger.debug("Some data to read: " + avail);
-                            readMessage("CLIENT => " + clientId, input);
+                            readMessage("CLIENT => " + clientId, input, output);
                         }
 
                         pause(2);
@@ -104,7 +104,7 @@ public class RunServer {
 
     abstract class Handler extends MessageReader implements Runnable {
         @Override
-        public void process(String id, byte[] mh, byte[] msg) {
+        public void process(String id, byte[] mh, byte[] msg, OutputStream output) {
             logger.debug("Server => MH Size: " + mh.length);
             TCPUtil.print(mh);
             TCPUtil.print(msg);

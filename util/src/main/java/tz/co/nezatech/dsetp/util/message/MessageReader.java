@@ -6,11 +6,12 @@ import tz.co.nezatech.dsetp.util.TCPUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public abstract class MessageReader implements MessageHandler {
     Logger logger = LoggerFactory.getLogger(MessageReader.class.getName());
 
-    public void readMessage(String id, InputStream input) throws IOException {
+    public void readMessage(String id, InputStream input, OutputStream output) throws IOException {
         byte[] th = new byte[4];
         int count;
         if ((count = input.read(th)) > 0) {
@@ -22,9 +23,16 @@ public abstract class MessageReader implements MessageHandler {
                 byte[] msg = new byte[len - 29];
                 if ((count = input.read(msg)) > 0) {
                     logger.debug("Read: " + count);
-                    process(id, mh, msg);
+                    process(id, mh, msg, output);
                 }
             }
+        }
+    }
+    public void pause(long seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

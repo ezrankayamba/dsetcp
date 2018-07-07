@@ -15,19 +15,22 @@ public abstract class MessageReader implements MessageHandler {
         byte[] th = new byte[4];
         int count;
         if ((count = input.read(th)) > 0) {
-            logger.debug("Read: " + count);
+            logger.debug("Read: " + count + ", Transport Header: " + TCPUtil.text(th));
             short len = TCPUtil.getMsgLength(th);
             byte[] mh = new byte[29];
             if ((count = input.read(mh)) > 0) {
-                logger.debug("Read: " + count);
+                logger.debug("Read: " + count + ", Message Header: " + TCPUtil.text(mh));
+                MessageType type = MessageType.byType(mh[28]);
+                logger.debug("MessageType: " + type);
                 byte[] msg = new byte[len - 29];
                 if ((count = input.read(msg)) > 0) {
-                    logger.debug("Read: " + count);
+                    logger.debug("Read: " + count + ", Message Payload: " + TCPUtil.text(msg));
                     process(id, mh, msg, output);
                 }
             }
         }
     }
+
     public void pause(long seconds) {
         try {
             Thread.sleep(seconds * 1000);

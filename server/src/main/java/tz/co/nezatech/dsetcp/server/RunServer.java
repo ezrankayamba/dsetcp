@@ -3,6 +3,7 @@ package tz.co.nezatech.dsetcp.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tz.co.nezatech.dsetp.util.RSAUtil;
 import tz.co.nezatech.dsetp.util.TCPUtil;
 import tz.co.nezatech.dsetp.util.config.Config;
 import tz.co.nezatech.dsetp.util.config.ConnectionConfig;
@@ -13,33 +14,52 @@ import tz.co.nezatech.dsetp.util.message.TCPMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPublicKey;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class RunServer {
     Logger logger = LoggerFactory.getLogger(RunServer.class.getName());
     Config conCfg = ConnectionConfig.get("server.cfg");
     int clientId = 0;
+    KeyPair keyPair;
+    private String[] args;
 
+    public RunServer(String[] args) {
+        this.args = args;
+    }
 
     public static void main(String[] args) {
-        RunServer client = new RunServer();
+        RunServer client = new RunServer(args);
         client.init();
     }
 
     void init() {
         logger.debug("Starting TCP/IP Server");
-        String ip = conCfg.getProperty("tcp.server.host");
         String port = conCfg.getProperty("tcp.server.port");
-        String compId = conCfg.getProperty("sender.comp.id");
-        String pwd = conCfg.getProperty("sender.password");
-        logger.debug(String.format("Server: %s:%s ", ip, port));
-        logger.debug(String.format("Client: %s ", compId));
+        if (args.length > 0) {
+            port = args[0];
+        }
+        try {
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048);
+
+            keyPair = kpg.generateKeyPair();
+        } catch (Exception ex) {
+
+        }
 
         try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(port))) {
             logger.error(String.format("Server started successfully at %s port", port));
             logger.info(String.format("Waiting for connections at %s port", port));
+
             while (true) {
                 Socket con = serverSocket.accept();
                 String host = con.getInetAddress().getHostAddress();
@@ -52,8 +72,9 @@ public class RunServer {
         }
     }
 
-    private void handleNewClient(final Socket con) {
+    private void handleNewClient(final Socket con) throws IOException {
         clientId++;
+        String id = "CLIENT: " + clientId;
         Thread handler = new Thread(new Handler() {
             @Override
             public void run() {
@@ -61,13 +82,16 @@ public class RunServer {
                 int sequence = 0;
                 try {
                     OutputStream output = con.getOutputStream();
-                    PrintWriter writer = new PrintWriter(output, true);
 
-                    String text="Welcome, You can proceed with Login";
-                    TCPMessage ack = frmConfig(text, ++sequence, MessageType.ACK_SUCCESS);
+                    RSAPublicKey pk = (RSAPublicKey) keyPair.getPublic();
+                    String xml = RSAUtil.getPublicKeyAsXml(pk);
+                    TCPMessage ack = frmConfig(xml, ++sequence, MessageType.DAILY_KEY);
                     logger.debug("Send ACK SUCCESS Message: " + ack);
                     output.write(ack.getMessage());
                     output.flush();
+
+                    //enable heartbeat
+                    enableHeartbeat(id, output);
 
                     while (con.isConnected()) {
                         InputStream input = con.getInputStream();
@@ -99,21 +123,40 @@ public class RunServer {
     }
 
     private TCPMessage frmConfig(String msg, int seq, MessageType type) {
-        return new TCPMessage(msg.getBytes(), seq, conCfg.getProperty("sender.username"), conCfg.getProperty("sender.user.id"), TCPUtil.timeNow(), type.getType());
+        return new TCPMessage(msg.getBytes(), seq, conCfg.getProperty("sender.username"), Integer.parseInt(conCfg.getProperty("sender.user.number")), TCPUtil.timeNow(), type.getType());
     }
 
     abstract class Handler extends MessageReader implements Runnable {
+        private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        int sequence = 0;
+
         @Override
         public void process(String id, byte[] mh, byte[] msg, OutputStream output) {
-            logger.debug("Server => MH Size: " + mh.length);
-            TCPUtil.print(mh);
-            TCPUtil.print(msg);
+            logger.debug("ID: " + id);
             int seqNo = TCPUtil.seqNo(mh);
-            String username = TCPUtil.getUsername(mh);
-            String userNo = TCPUtil.getUserNo(mh);
+            String username = TCPUtil.getUsername(mh).trim();
+            String userNo = TCPUtil.getUserNo(mh).trim();
             String time = TCPUtil.getTime(mh);
-            logger.info(String.format("Message Header | SeqNo: %d, Username: %s, UserNo: %s, Time: %s", seqNo, username, userNo, time));
-            logger.info("Message: " + new String(msg));
+            logger.debug(String.format("Message Header | SeqNo: %d, Username: %s, UserNo: %s, Time: %s", seqNo, username, userNo, time));
+            logger.debug("Message: " + new String(msg));
+            MessageType type = MessageType.byType(mh[28]);
+            logger.debug("MessageType: " + type);
+        }
+
+        public void enableHeartbeat(String id, OutputStream output) {
+            final Runnable hb = () -> {
+                logger.info("Sending heartbeat for " + id);
+                try {
+                    TCPMessage ack = frmConfig("", ++sequence, MessageType.HEART_BEAT_SVR);
+                    logger.debug("Send ACK SUCCESS Message: " + ack);
+                    output.write(ack.getMessage());
+                    output.flush();
+                } catch (Exception ex) {
+                    logger.debug("Exception: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            };
+            final ScheduledFuture<?> schedule = scheduler.scheduleAtFixedRate(hb, 30, 30, SECONDS);
         }
     }
 }

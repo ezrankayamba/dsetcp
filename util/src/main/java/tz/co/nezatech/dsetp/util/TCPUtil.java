@@ -21,7 +21,7 @@ public class TCPUtil {
      * @return the extracted message length, excl. transport header itself
      */
     public static short getMsgLength(byte[] th) {
-        return getShort(th[1], th[2]);
+        return shortFromBytes(new byte[]{th[2], th[1]});
     }
 
     public static int toInt(byte[] bytes, int offset) {
@@ -45,6 +45,23 @@ public class TCPUtil {
         byte[] res = new byte[len];
         System.arraycopy(bytes, start, res, 0, len);
         return new String(res);
+    }
+
+    public static byte[] intToBytes(final int i) {
+        ByteBuffer bb = ByteBuffer.allocate(4);
+        bb.putInt(i);
+        return bb.array();
+    }
+
+    public static byte[] shortToBytes(final short i) {
+        ByteBuffer bb = ByteBuffer.allocate(2);
+        bb.putShort(i);
+        return bb.array();
+    }
+
+    public static short shortFromBytes(byte[] bytes) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        return byteBuffer.getShort();
     }
 
     public static byte[] timeNow() {
@@ -84,12 +101,20 @@ public class TCPUtil {
         System.out.println();
     }
 
+    public static String text(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X ", b));
+        }
+        return sb.toString();
+    }
+
     public static byte[] getBytes(int allocated, String value) {
         byte[] res = new byte[allocated];
         try {
             byte[] bytes = value.getBytes("UTF-8");
             System.arraycopy(bytes, 0, res, 0, bytes.length);
-            print(bytes);
+            res[bytes.length] = '\0';
             return res;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

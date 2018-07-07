@@ -16,22 +16,25 @@ public class TCPMessage {
      */
     private byte[] payload;
 
-    public TCPMessage(byte[] payload, int seqNo, String username, String userNo, byte[] time, byte msgType) {
+    public TCPMessage(byte[] payload, int seqNo, String username, int userNo, byte[] time, byte msgType) {
         //Transport header
-        short len = (short) (payload.length + 29);//29 - message header
-        byte[] lenBytes = TCPUtil.getBytes(len);
-        byte high = (byte) ((len >> 8) & 0xFF);
-        byte low = (byte) (len & 0xFF);
+        int len = (payload.length + 29);//29 - message header
+        short shortLen = (short)len;
+        byte[] lenBytes = TCPUtil.shortToBytes(shortLen);
+
+        byte high = lenBytes[0];
+        byte low = lenBytes[1];
         byte xor = (byte) (low ^ high);
-        this.th = new byte[]{(byte) 255, lenBytes[3], lenBytes[0], xor};
+        this.th = new byte[]{(byte) 255,low, high, xor};
 
         //message header
         this.mh = new byte[29];
-        byte[] seq = TCPUtil.getBytes(seqNo);
+        byte[] seq = TCPUtil.intToBytes(seqNo);
         System.arraycopy(seq, 0, this.mh, 0, 4);
         byte[] usr = TCPUtil.getBytes(16, username);
-        System.arraycopy(usr, 0, this.mh, 4, 16);
-        byte[] usrNo = TCPUtil.getBytes(4, userNo);
+        System.arraycopy(new byte[]{(byte) username.length()}, 0, this.mh, 4, 1);
+        System.arraycopy(usr, 0, this.mh, 5, usr.length);
+        byte[] usrNo = TCPUtil.intToBytes(userNo);
         System.arraycopy(usrNo, 0, this.mh, 20, 4);
         System.arraycopy(time, 0, this.mh, 24, 4);
         this.mh[28] = msgType;
@@ -49,12 +52,10 @@ public class TCPMessage {
         System.arraycopy(th, 0, msg, 0, 4);
         System.arraycopy(mh, 0, msg, 4, 29);
         System.arraycopy(payload, 0, msg, 4 + 29, payload.length);
-        TCPUtil.print(msg);
         return msg;
     }
 
     public void setMessage(byte[] msg) {
-        TCPUtil.print(msg);
         this.th = new byte[4];
         this.mh = new byte[29];
         System.arraycopy(msg, 0, this.th, 0, 4);

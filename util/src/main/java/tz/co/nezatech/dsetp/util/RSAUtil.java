@@ -1,5 +1,6 @@
 package tz.co.nezatech.dsetp.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import javax.crypto.BadPaddingException;
@@ -9,6 +10,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
@@ -62,6 +64,22 @@ public class RSAUtil {
             ex.printStackTrace();
         }
         return publicKey;
+    }
+    public static String getPublicKeyAsXml(RSAPublicKey pk) {
+        String xml=null;
+        try {
+
+            org.apache.commons.codec.binary.Base64 base64 = new org.apache.commons.codec.binary.Base64();
+            ObjectMapper mapper = new XmlMapper();
+            RSAKeyValue rsa =new RSAKeyValue();
+            rsa.setExponent(new String(base64.encode(pk.getPublicExponent().toByteArray())));
+            rsa.setModulus(new String(base64.encode(pk.getModulus().toByteArray())));
+            xml = mapper.writeValueAsString(rsa);
+            return xml;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return xml;
     }
 
     public static PrivateKey getPrivateKey(String base64PrivateKey) {

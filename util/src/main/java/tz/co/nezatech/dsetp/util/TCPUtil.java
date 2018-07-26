@@ -1,10 +1,13 @@
 package tz.co.nezatech.dsetp.util;
 
+import tz.co.nezatech.dsetp.util.model.Contract;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class TCPUtil {
@@ -77,6 +80,26 @@ public class TCPUtil {
         return new byte[]{hour, minute, second, 0};
     }
 
+    public static byte[] dateNow(int daysOffset) {
+        byte[] date = new byte[12];
+        LocalDateTime now = LocalDateTime.now();
+        now.plusDays(daysOffset);
+        byte[] year = intToBytes(now.getYear());
+        for (int i = 0; i < 4; i++) {
+            date[i] = year[3 - i];
+        }
+        byte[] month = intToBytes(now.getMonthValue());
+        for (int i = 0; i < 4; i++) {
+            date[i + 4] = month[3 - i];
+        }
+        byte[] day = intToBytes(now.getDayOfMonth());
+        for (int i = 0; i < 4; i++) {
+            date[i + 8] = day[3 - i];
+        }
+
+        return date;
+    }
+
     public static String getUsername(byte[] bytes) {
         return getString(bytes, 4, 16);
     }
@@ -120,5 +143,10 @@ public class TCPUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static byte[] contract(String name) {
+        Contract cont = new Contract(name);
+        return cont.toBytes();
     }
 }

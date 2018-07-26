@@ -9,9 +9,11 @@ public enum MessageType {
     ACK_ERROR((byte) 125),
     REQUEST_DAILY_TREND((byte) 61),
     START_OF_DAY_DOWNLOAD((byte) 36),
+    DISPLAY_UPDATES((byte) 56),
     SET_SCREEN_UPDATE((byte) 60),
     REQUEST_SCREEN_OPEN((byte) 98),
-    MSG_UNKNOWN((byte) 999);
+    FUTURE_CONTRACT_SUBSCRIPTION((byte) 99),
+    MSG_UNKNOWN((byte) 255);
 
     private byte type;
 
@@ -33,6 +35,13 @@ public enum MessageType {
                 return b;
             }
         }
-        return MSG_UNKNOWN;
+        MessageType tmp = MessageType.MSG_UNKNOWN;
+        tmp.setType(type);
+        return tmp;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "(" + type + ")";
     }
 }

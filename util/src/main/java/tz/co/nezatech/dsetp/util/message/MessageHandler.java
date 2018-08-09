@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface MessageHandler {
-    public void process(String id, byte[] mh, byte[] msg, OutputStream output) throws IOException;
+    public void process(byte[] fullMsg, String id, byte[] mh, byte[] msg, OutputStream output) throws IOException;
     public void process(ByteArrayOutputStream baos, OutputStream output) throws IOException;
 
     public default byte[] encrypt() {

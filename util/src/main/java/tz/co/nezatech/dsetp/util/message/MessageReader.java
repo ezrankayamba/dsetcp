@@ -14,7 +14,7 @@ public abstract class MessageReader implements MessageHandler {
 
     public void readMessage(String id, InputStream input, OutputStream output) throws IOException {
         byte[] th = new byte[4];
-        ByteArrayOutputStream baos =new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int count;
         if ((count = input.read(th)) > 0) {
             baos.write(th);
@@ -26,14 +26,16 @@ public abstract class MessageReader implements MessageHandler {
                 logger.debug("<< MessageType: " + type);
                 byte[] msg = new byte[len - 29];
                 if ((count = input.read(msg)) > 0) {
+                    logger.debug("Msg Size: " + count);
                     baos.write(msg);
                     process(baos, output);
-                }else {
+                } else {
                     process(baos, output);
                 }
             }
         }
     }
+
     @Override
     public void process(ByteArrayOutputStream baos, OutputStream output) throws IOException {
         byte[] bytes = baos.toByteArray();
@@ -49,10 +51,10 @@ public abstract class MessageReader implements MessageHandler {
         if (mlen > 0) {
             byte[] msg = new byte[mlen];
             System.arraycopy(bytes, (4 + 29), msg, 0, mlen);
-            process("NewProcess", mh, msg, output);
+            process(bytes, "NewProcess", mh, msg, output);
         } else {
             logger.debug("No payload!");
-            process("NewProcessNoPayload", mh, null, output);
+            process(bytes, "NewProcessNoPayload", mh, null, output);
         }
     }
 

@@ -29,12 +29,12 @@ public class TCPMessage {
 
         //message header
         this.mh = new byte[29];
-        byte[] seq = TCPUtil.intToBytes(seqNo);
+        byte[] seq = TCPUtil.intToBytes(seqNo, true);
         System.arraycopy(seq, 0, this.mh, 0, 4);
         byte[] usr = TCPUtil.getBytes(16, username);
         System.arraycopy(new byte[]{(byte) username.length()}, 0, this.mh, 4, 1);
         System.arraycopy(usr, 0, this.mh, 5, usr.length);
-        byte[] usrNo = TCPUtil.intToBytes(userNo);
+        byte[] usrNo = TCPUtil.intToBytes(userNo, true);
         System.arraycopy(usrNo, 0, this.mh, 20, 4);
         System.arraycopy(time, 0, this.mh, 24, 4);
         this.mh[28] = msgType;

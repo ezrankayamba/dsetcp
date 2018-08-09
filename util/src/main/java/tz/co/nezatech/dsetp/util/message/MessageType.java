@@ -9,10 +9,11 @@ public enum MessageType {
     ACK_ERROR((byte) 125),
     REQUEST_DAILY_TREND((byte) 61),
     START_OF_DAY_DOWNLOAD((byte) 36),
-    DISPLAY_UPDATES((byte) 56),
+    DISPLAY_UPDATES((byte) 59),
     SET_SCREEN_UPDATE((byte) 60),
     REQUEST_SCREEN_OPEN((byte) 98),
     FUTURE_CONTRACT_SUBSCRIPTION((byte) 99),
+    BUSINESS_REJECT((byte) 132),
     MSG_UNKNOWN((byte) 255);
 
     private byte type;

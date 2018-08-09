@@ -1,22 +1,27 @@
 package tz.co.nezatech.dsetcp.client;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tz.co.nezatech.dsetp.util.RSAUtil;
 import tz.co.nezatech.dsetp.util.TCPUtil;
 import tz.co.nezatech.dsetp.util.config.Config;
 import tz.co.nezatech.dsetp.util.config.ConnectionConfig;
+import tz.co.nezatech.dsetp.util.db.ConnectionPool;
 import tz.co.nezatech.dsetp.util.exception.TCPConnectionException;
-import tz.co.nezatech.dsetp.util.message.MessageReader;
-import tz.co.nezatech.dsetp.util.message.MessageType;
-import tz.co.nezatech.dsetp.util.message.TCPMessage;
+import tz.co.nezatech.dsetp.util.message.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.time.LocalDateTime;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,12 +53,32 @@ public class RunClient extends MessageReader {
 
     public static void main(String[] args) {
         RunClient client = new RunClient();
+
+        client.dbSetup();
         client.init();
     }
 
-    void init() {
-        logger.debug("Starting TCP/IP connection");
+    private void dbSetup() {
+        try {
+            Properties properties = new Properties();
+            properties.load(RunClient.class.getClassLoader().getResourceAsStream("db.properties"));
+            ConnectionPool.configure(properties);
+        } catch (IOException e) {
+            e.printStackTrace();
+            String msg = "Exiting application, no db configurations found!";
+            stopAppDueToFailure(msg);
+        }
+    }
 
+    protected void stopAppDueToFailure(String msg) {
+        System.err.println(msg);
+        logger.error(msg);
+        ConnectionPool.dataSource().close();
+        System.exit(-1);
+    }
+
+    void init() {
+        logger.debug(String.format("Starting TCP/IP connection -> %s:%s", ip, port));
         try {
             try (final Socket con = new Socket(ip, Integer.parseInt(port))) {
                 logger.debug(String.format("Successfully connected to server. IP: %s, Port: %s. ", ip, port));
@@ -82,14 +107,14 @@ public class RunClient extends MessageReader {
         }
     }
 
-    private void restartApp(int pause) {
+    protected void restartApp(int pause) {
         logger.debug("App will try to re-initiate this connection in " + pause + " seconds");
         pause(pause);
         init();
     }
 
     @Override
-    public void process(String id, byte[] mh, byte[] msg, OutputStream output) throws IOException {
+    public void process(byte[] fullMsg, String id, byte[] mh, byte[] msg, OutputStream output) throws IOException {
         if (msg == null) {
             logger.debug("<< Empty message, could be a heartbeat");
             return;
@@ -99,131 +124,38 @@ public class RunClient extends MessageReader {
         String userNo = TCPUtil.getUserNo(mh).trim();
         String time = TCPUtil.getTime(mh);
         logger.debug(String.format("<< Message Header | SeqNo: %d, Username: %s, UserNo: %s, Time: %s", seqNo, username, userNo, time));
-        //logger.debug("<< Message: " + new String(msg));
-        logger.debug("<< Header(HEX): " + TCPUtil.text(mh));
         logger.debug("<< Message(HEX): " + TCPUtil.text(msg));
         MessageType type = MessageType.byType(mh[28]);
         logger.debug("App State: " + appState);
         logger.debug("<< MessageType: " + type);
-        if (appState == 0) {//Just connected
-            if (type == MessageType.DAILY_KEY) {
-                appState = 1;
-                //send login message
-                this.msgSequence++;
-                sendLogin(msg, output);
-                logger.debug(">> Login message sent");
-            } else {
-                logger.error("Failed to connect to DSE. Check logs or contact support");
-                System.exit(-1);
-            }
-        } else if (appState == 1) {//Login response
-            logger.debug("<< Login response: " + new String(msg));
-            if (type == MessageType.ACK_SUCCESS) {
-                logger.debug("<< Login success");
-                appState = 2;
-                onSuccessLogin(output);
-            } else if (type == MessageType.ACK_ERROR) {
-                logger.error("<< Login failed: " + new String(msg));
-                appState = -1;//Login fail
-                restartApp(60);
-            } else {
-                logger.debug("<< Login status unknown: " + type);
-            }
-        } else {
-            logger.debug("<< Application message: " + type + " = " + TCPUtil.text(msg));
-        }
+        ClientMessageProcessor.process(this, type, fullMsg, msg, output);
     }
 
-    private void onSuccessLogin(OutputStream output) {
-        enableHeartbeat(String.format("%s:%s", ip, port), output);
 
-        LocalDateTime now = LocalDateTime.now();
-        int day = now.getDayOfMonth();
-        int month = now.getMonthValue();
-        int year = now.getYear();
 
-        byte[] startOfDayDownload = new byte[24];
-        startOfDayDownload[0] = (byte) 1; // data type
-        startOfDayDownload[1] = (byte) 0; // unused
-        startOfDayDownload[2] = (byte) 0; // last piece of chunk
-        startOfDayDownload[3] = (byte) 0; //re-request
-        System.arraycopy(TCPUtil.intToBytes(0), 0, startOfDayDownload, 4, 4); // action
-        System.arraycopy(TCPUtil.intToBytes(0), 0, startOfDayDownload, 8, 4); // specific record
-        System.arraycopy(TCPUtil.intToBytes(year), 0, startOfDayDownload, 12, 4); // year
-        System.arraycopy(TCPUtil.intToBytes(month), 0, startOfDayDownload, 16, 4); // month
-        System.arraycopy(TCPUtil.intToBytes(day), 0, startOfDayDownload, 20, 4); // day
-        sendMessage(startOfDayDownload, MessageType.START_OF_DAY_DOWNLOAD, output);
-        sendMessage(new byte[]{(byte) 0}, MessageType.REQUEST_SCREEN_OPEN, output);
 
-        //Request Market Data
-        List<String> contracts = List.of(conCfg.getProperty("sender.contract.name"));
-        byte[] msg99 = new byte[(contracts.size() * 48) + 2];
-        short qty = (short) contracts.size();
-        byte[] qtyBytes = TCPUtil.shortToBytes(qty);
-
-        msg99[0] = qtyBytes[1];
-        msg99[1] = qtyBytes[0];
-        AtomicInteger pointer = new AtomicInteger(2);
-        //msg99[++pointer] = (byte) c.length();
-        contracts.forEach(c -> {
-            byte[] contract = TCPUtil.contract(c);
-            logger.debug("Contract Length: " + contract.length + ", " + c);
-            System.arraycopy(contract, 0, msg99, pointer.get(), contract.length);
-            pointer.addAndGet(48);
-        });
-        sendMessage(msg99, MessageType.FUTURE_CONTRACT_SUBSCRIPTION, output);
-    }
-
-    private void sendLogin(byte[] msg, OutputStream output) throws IOException {
+    protected void sendLogin(byte[] msg, OutputStream output) throws IOException {
         TCPMessage login = login(msgSequence, msg);
-        byte[] msgToSend = login.getMessage();
-        logger.debug(String.format(">> Login Message: %s ", TCPUtil.text(msgToSend)));
-        output.write(msgToSend);
-        output.flush();
+        ClientMessageProcessor.sendMessage(login, MessageType.LOGIN, output);
     }
 
     public void enableHeartbeat(String id, OutputStream output) {
+        logger.debug("Start heartbeat messages");
         final Runnable hb = () -> {
             logger.info(">> Sending heartbeat");
-            sendMessage("", MessageType.HEART_BEAT_CLT, output);
+            ClientMessageProcessor.sendMessage(this,"", MessageType.HEART_BEAT_CLT, output);
         };
         scheduler.scheduleAtFixedRate(hb, 60, 60, SECONDS);
     }
 
-    private void sendMessage(String msg, MessageType type, OutputStream output) {
-        sendMessage(msg.getBytes(), type, output);
-    }
-
-    private void sendMessage(byte[] msg, MessageType type, OutputStream output) {
-        TCPMessage outMsg = frmConfig(msg, ++msgSequence, type);
-        //logger.debug(">> Sending message: " + type + " = " + new String(outMsg.getMessage()));
-        logger.debug(">> Sending message(HEX): " + type + " = " + TCPUtil.text(outMsg.getMessage()));
-        try {
-            output.write(outMsg.getMessage());
-            output.flush();
-        } catch (IOException e) {
-            logger.error("Failed to send msg: " + e.getMessage());
-            e.printStackTrace();
-            try {
-                throw new TCPConnectionException(e.getMessage());
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-        }
-    }
-
     private TCPMessage login(int seq, byte[] key) {
         try {
-            String keyStr = new String(key);
-            logger.debug("<< Key: " + keyStr);
             String pwd = conCfg.getProperty("sender.password");
-            //logger.debug("Plain pwd: " + pwd);
             byte[] encrypt = RSAUtil.encryptFromXmlKey(pwd, new String(key));
-            //logger.debug("Encrypted pwd: " + new String(encrypt));
             byte[] loginMsg = new byte[encrypt.length + 4];
             System.arraycopy(TCPUtil.getBytes(encrypt.length), 0, loginMsg, 0, 4);
             System.arraycopy(encrypt, 0, loginMsg, 4, encrypt.length);
-            return frmConfig(loginMsg, seq, MessageType.LOGIN);
+            return ClientMessageProcessor.frmConfig(this, loginMsg, seq, MessageType.LOGIN);
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             e.printStackTrace();
@@ -231,10 +163,29 @@ public class RunClient extends MessageReader {
         return null;
     }
 
-    private TCPMessage frmConfig(byte[] msg, int seq, MessageType type) {
-        String username = conCfg.getProperty("sender.username");
-        int userNo = Integer.parseInt(conCfg.getProperty("sender.user.number"));
-        logger.debug(String.format("Username: %s, UserNo: %d", username, userNo));
-        return new TCPMessage(msg, seq, username, userNo, TCPUtil.timeNow(), type.getType());
+    @Override
+    public void process(ByteArrayOutputStream baos, OutputStream output) throws IOException {
+        byte[] bytes = baos.toByteArray();
+        String text = TCPUtil.text(bytes);
+        MessageType type = MessageType.byType(bytes[(4 + 29 - 1)]);//the last byte of the message header
+        try {
+            HikariDataSource ds = ConnectionPool.dataSource();
+            try (Connection con = ds.getConnection()) {
+                logger.debug("Logging incoming message");
+                PreparedStatement s = con.prepareStatement("INSERT INTO agm_message (msg_type, msg_direction, msg_details) VALUES (?, ?, ?)");
+                s.setString(1, type.toString());
+                s.setString(2, "FROM_SVR");
+                s.setString(3, text);
+
+                int records = s.executeUpdate();
+                logger.debug(String.format("Logged %d message(s)", records));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+        }
+        super.process(baos, output);
     }
 }

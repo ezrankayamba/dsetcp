@@ -1,12 +1,21 @@
 package tz.co.nezatech.dsetcp.server;
 
 
+import com.sun.net.httpserver.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tz.co.nezatech.dsetp.util.RSAUtil;
+import tz.co.nezatech.dsetp.util.RandomUtil;
 import tz.co.nezatech.dsetp.util.TCPUtil;
+import tz.co.nezatech.dsetp.util.TestConsts;
 import tz.co.nezatech.dsetp.util.config.Config;
 import tz.co.nezatech.dsetp.util.config.ConnectionConfig;
+import tz.co.nezatech.dsetp.util.handler.MyHttpHandler;
+import tz.co.nezatech.dsetp.util.handler.RequestHandler;
+import tz.co.nezatech.dsetp.util.handler.http.MsgReadHandler;
+import tz.co.nezatech.dsetp.util.handler.http.MsgTypeHandler;
+import tz.co.nezatech.dsetp.util.handler.http.StreamSectionsHandler;
+import tz.co.nezatech.dsetp.util.handler.http.SwitchEndianHandler;
 import tz.co.nezatech.dsetp.util.message.MessageReader;
 import tz.co.nezatech.dsetp.util.message.MessageType;
 import tz.co.nezatech.dsetp.util.message.TCPMessage;
@@ -14,6 +23,7 @@ import tz.co.nezatech.dsetp.util.message.TCPMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyPair;
@@ -37,8 +47,26 @@ public class RunServer {
     }
 
     public static void main(String[] args) {
-        RunServer client = new RunServer(args);
-        client.init();
+        RunServer server = new RunServer(args);
+        server.runHttp();
+        server.init();
+    }
+
+    private void runHttp() {
+        HttpServer server = null;
+        try {
+            server = HttpServer.create(new InetSocketAddress(Integer.parseInt(conCfg.getProperty("http.server.port"))), 0);
+            server.createContext("/", new MyHttpHandler(new RequestHandler[]{
+                    new MsgTypeHandler(),
+                    new MsgReadHandler(),
+                    new SwitchEndianHandler(),
+                    new StreamSectionsHandler()
+            }));
+            server.setExecutor(null); // creates a default executor
+            server.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void init() {
@@ -74,7 +102,6 @@ public class RunServer {
 
     private void handleNewClient(final Socket con) throws IOException {
         clientId++;
-        String id = "CLIENT: " + clientId;
         Thread handler = new Thread(new Handler() {
             @Override
             public void run() {
@@ -86,21 +113,17 @@ public class RunServer {
                     RSAPublicKey pk = (RSAPublicKey) keyPair.getPublic();
                     String xml = RSAUtil.getPublicKeyAsXml(pk);
                     TCPMessage ack = frmConfig(xml, ++sequence, MessageType.DAILY_KEY);
-                    logger.debug("Send ACK SUCCESS Message: " + ack);
+                    logger.debug("Send Daily Key: " + ack);
                     output.write(ack.getMessage());
                     output.flush();
 
-                    //enable heartbeat
-                    enableHeartbeat(id, output);
-
-                    while (con.isConnected()) {
+                    while (con.isConnected() && !isStopped()) {
                         InputStream input = con.getInputStream();
                         int avail = input.available();
                         if (avail != 0) {
                             logger.debug("Some data to read: " + avail);
                             readMessage("CLIENT => " + clientId, input, output);
                         }
-
                         pause(2);
                     }
                     logger.debug("Client disconnected");
@@ -129,9 +152,14 @@ public class RunServer {
     abstract class Handler extends MessageReader implements Runnable {
         private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         int sequence = 0;
+        boolean stopped = false;
+
+        boolean isStopped() {
+            return stopped;
+        }
 
         @Override
-        public void process(String id, byte[] mh, byte[] msg, OutputStream output) {
+        public void process(byte[] fullMsg, String id, byte[] mh, byte[] msg, OutputStream output) {
             logger.debug("ID: " + id);
             int seqNo = TCPUtil.seqNo(mh);
             String username = TCPUtil.getUsername(mh).trim();
@@ -141,22 +169,61 @@ public class RunServer {
             logger.debug("Message: " + new String(msg));
             MessageType type = MessageType.byType(mh[28]);
             logger.debug("MessageType: " + type);
+            if (type == MessageType.LOGIN) {
+                sendMessage(TCPUtil.hexToBytes(TestConsts.successLoginReponse), MessageType.ACK_SUCCESS, output);
+                //enable heartbeat
+                enableHeartbeat(id, output);
+            }
+
         }
 
         public void enableHeartbeat(String id, OutputStream output) {
+            String dummy[] = new String[]{TestConsts.msg36Svr1, TestConsts.msg36Svr2, TestConsts.msg99Svr};
             final Runnable hb = () -> {
                 logger.info("Sending heartbeat for " + id);
                 try {
-                    TCPMessage ack = frmConfig("", ++sequence, MessageType.HEART_BEAT_SVR);
-                    logger.debug("Send ACK SUCCESS Message: " + ack);
-                    output.write(ack.getMessage());
-                    output.flush();
+                    TCPMessage ack = frmConfig("".getBytes(), ++sequence, MessageType.HEART_BEAT_SVR);
+                    sendMessage(ack, MessageType.HEART_BEAT_SVR, output);
+
+                    //send random msg
+                    pause(2);
+                    int i = RandomUtil.get(0, dummy.length - 1);
+                    String msgHex = dummy[i];
+                    byte[] bytes = TCPUtil.hexToBytes(msgHex);
+                    sendMessage(bytes, TCPUtil.msgType(bytes), output);
                 } catch (Exception ex) {
                     logger.debug("Exception: " + ex.getMessage());
                     ex.printStackTrace();
                 }
             };
             final ScheduledFuture<?> schedule = scheduler.scheduleAtFixedRate(hb, 30, 30, SECONDS);
+        }
+
+        private void sendMessage(byte[] msg, MessageType type, OutputStream output) {
+            TCPMessage outMsg = frmConfig(msg, 2, type);
+            sendMessage(outMsg, type, output);
+        }
+
+        private void sendMessage(TCPMessage outMsg, MessageType type, OutputStream output) {
+            String text = TCPUtil.text(outMsg.getMessage());
+            logger.debug(">> Sending message(HEX): " + type + " = " + text);
+
+            try {
+                output.write(outMsg.getMessage());
+                output.flush();
+            } catch (IOException e) {
+                stopped = true;
+                scheduler.shutdownNow();
+                logger.error("Failed to send msg from client: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        private TCPMessage frmConfig(byte[] msg, int seq, MessageType type) {
+            String username = conCfg.getProperty("sender.username");
+            int userNo = Integer.parseInt(conCfg.getProperty("sender.user.number"));
+            logger.debug(String.format("Username: %s, UserNo: %d", username, userNo));
+            return new TCPMessage(msg, seq, username, userNo, TCPUtil.timeNow(), type.getType());
         }
     }
 }

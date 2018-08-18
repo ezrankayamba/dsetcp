@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tz.co.nezatech.dsetp.util.TCPUtil;
+import tz.co.nezatech.dsetp.util.config.Config;
 import tz.co.nezatech.dsetp.util.db.ConnectionPool;
 import tz.co.nezatech.dsetp.util.exception.TCPConnectionException;
 import tz.co.nezatech.dsetp.util.message.*;
@@ -17,25 +18,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ClientMessageProcessor {
+class ClientMessageProcessor {
     private static Logger logger = LoggerFactory.getLogger(ClientMessageProcessor.class);
 
-    public static TCPMessage frmConfig(RunClient client, byte[] msg, int seq, MessageType type) {
-        String username = client.conCfg.getProperty("sender.username");
-        int userNo = Integer.parseInt(client.conCfg.getProperty("sender.user.number"));
-        return new TCPMessage(msg, seq, username, userNo, TCPUtil.timeNow(), type.getType());
+    static TCPMessage frmConfig(Config conCfg, byte[] msg, MessageType type) {
+        String username = conCfg.getProperty("sender.username");
+        int userNo = Integer.parseInt(conCfg.getProperty("sender.user.number"));
+        return new TCPMessage(msg, MsgSequencer.next(), username, userNo, TCPUtil.timeNow(), type.getType());
     }
 
-    public static void sendMessage(RunClient client, String msg, MessageType type, OutputStream output) {
-        sendMessage(client, msg.getBytes(), type, output);
-    }
+    /*static void sendMessage(Config conCfg, String msg, MessageType type, OutputStream output) {
+        sendMessage(conCfg, msg.getBytes(), type, output);
+    }*/
 
-    public static void sendMessage(RunClient client, byte[] msg, MessageType type, OutputStream output) {
-        TCPMessage outMsg = frmConfig(client, msg, client.msgSequence++, type);
+    static void sendMessage(Config conCfg, byte[] msg, MessageType type, OutputStream output) {
+        TCPMessage outMsg = frmConfig(conCfg, msg, type);
         ClientMessageProcessor.sendMessage(outMsg, type, output);
     }
 
-    public static void sendMessage(TCPMessage outMsg, MessageType type, OutputStream output) {
+    static void sendMessage(TCPMessage outMsg, MessageType type, OutputStream output) {
         String text = TCPUtil.text(outMsg.getMessage());
         logger.debug(">> Sending message(HEX): " + type + " = " + text);
         try {
@@ -70,8 +71,7 @@ public class ClientMessageProcessor {
         }
     }
 
-    public static void onSuccessLogin(RunClient client, OutputStream output) {
-        client.enableHeartbeat("0", output);
+    private static void onSuccessLogin(Config conCfg, OutputStream output) {
         byte[] date = TCPUtil.dateNow(0);
 
         byte[] startOfDayDownload = new byte[24];
@@ -82,12 +82,21 @@ public class ClientMessageProcessor {
         System.arraycopy(TCPUtil.bytesEmpty(4), 0, startOfDayDownload, 4, 4); // action
         System.arraycopy(TCPUtil.bytesEmpty(4), 0, startOfDayDownload, 8, 4); // specific record
         System.arraycopy(date, 0, startOfDayDownload, 12, date.length); // date
+
+        startOfDayDownload[0] = MarketDataType.MARKET_DISPLAY_DATA.getType(); // data type
+        sendMessage(conCfg, startOfDayDownload, MessageType.START_OF_DAY_DOWNLOAD, output);
+
+        startOfDayDownload[0] = MarketDataType.INDICES.getType(); // data type
+        sendMessage(conCfg, startOfDayDownload, MessageType.START_OF_DAY_DOWNLOAD, output);
+
         startOfDayDownload[0] = MarketDataType.INSTRUMENTS_DATA.getType(); // data type
-        sendMessage(client, startOfDayDownload, MessageType.START_OF_DAY_DOWNLOAD, output);
-        sendMessage(client, new byte[]{(byte) 0}, MessageType.REQUEST_SCREEN_OPEN, output);
+        sendMessage(conCfg, startOfDayDownload, MessageType.START_OF_DAY_DOWNLOAD, output);
+
+
+        sendMessage(conCfg, new byte[]{(byte) 0}, MessageType.REQUEST_SCREEN_OPEN, output);
 
         //Request Market Data
-        List<String> contracts = List.of(client.conCfg.getProperty("sender.contract.name").split(","));
+        List<String> contracts = List.of(conCfg.getProperty("sender.contract.name").split(","));
         byte[] msg99 = new byte[(contracts.size() * 48) + 2];
         short qty = (short) contracts.size();
         byte[] qtyBytes = TCPUtil.shortToBytes(qty);
@@ -102,15 +111,14 @@ public class ClientMessageProcessor {
             System.arraycopy(contract, 0, msg99, pointer.get(), contract.length);
             pointer.addAndGet(48);
         });
-        sendMessage(client, msg99, MessageType.FUTURE_CONTRACT_SUBSCRIPTION, output);
+        sendMessage(conCfg, msg99, MessageType.FUTURE_CONTRACT_SUBSCRIPTION, output);
     }
 
-    public static void process(RunClient client, MessageType type, byte[] fullMsg, byte[] msg, OutputStream output) throws IOException {
+    static void process(RunClient client, MessageType type, byte[] fullMsg, byte[] msg, OutputStream output) {
         if (client.appState == 0) {//Just connected
             if (type == MessageType.DAILY_KEY) {
                 client.appState = 1;
                 //send login message
-                client.msgSequence++;
                 client.sendLogin(msg, output);
                 logger.debug(">> Login message sent");
             } else {
@@ -118,13 +126,16 @@ public class ClientMessageProcessor {
             }
         } else if (client.appState == 1) {//Login response
             logger.debug("<< Login response: " + new String(msg));
-            if (type == MessageType.ACK_SUCCESS) {
+            String msgText = TCPUtil.text(msg);
+            String invalidPwdText = TCPUtil.text("Invalid Password".getBytes());
+            if (type == MessageType.ACK_SUCCESS && !msgText.contains(invalidPwdText)) {
                 logger.debug("<< Login success");
                 client.appState = 2;
-                ClientMessageProcessor.onSuccessLogin(client, output);
-            } else if (type == MessageType.ACK_ERROR) {
+                client.enableHeartbeat(output);
+                ClientMessageProcessor.onSuccessLogin(client.conCfg, output);
+            } else if (type == MessageType.ACK_ERROR || msgText.contains(invalidPwdText)) {
                 logger.error("<< Login failed: " + new String(msg));
-                client.appState = -1;//Login fail
+                client.appState = 0;//Login fail
                 client.restartApp(60);
             } else {
                 logger.debug("<< Login status unknown: " + type);
@@ -159,14 +170,30 @@ public class ClientMessageProcessor {
                     logger.error("Failed to decode the message: " + type);
                 }
             } else if (type == MessageType.BUSINESS_REJECT) {
-                int poiter = 32;
-                int seqNo_ = TCPUtil.toInt(TCPUtil.extract(fullMsg, poiter, 4));
-                poiter += 4;
-                poiter += 3;// skip msg type ref
+                try {
+                    logger.debug("Reject Msg: " + TCPUtil.text(fullMsg));
+                    int pointer = 33;
+                    int seqNo_ = TCPUtil.toInt(TCPUtil.extract(fullMsg, pointer, 4), true);
+                    pointer += 4;
 
-                int size = fullMsg[poiter++];
-                String errorMsg = new String(TCPUtil.extract(fullMsg, poiter, size));
-                logger.error("Business Reject Msg(" + seqNo_ + "): " + errorMsg);
+                    int size = fullMsg[pointer++];
+                    byte msgTypeBytes[] = new byte[]{0, 0, 0, 0};
+                    byte[] extract = TCPUtil.extract(fullMsg, pointer, size);
+                    for (int i = 0; i < 4; i++) {
+                        if (i >= (4 - size)) {
+                            msgTypeBytes[i] = extract[i - size];
+                        }
+                    }
+
+                    int msgTypeInt = TCPUtil.toInt(msgTypeBytes);
+                    MessageType messageType = MessageType.byType((byte) msgTypeInt);
+
+                    size = fullMsg[pointer++];
+                    String errorMsg = new String(TCPUtil.extract(fullMsg, pointer, size));
+                    logger.error("Business Reject Msg(" + seqNo_ + ", " + messageType + "): " + errorMsg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             logger.debug("<< Application message: " + type + " = " + TCPUtil.text(msg));
         }

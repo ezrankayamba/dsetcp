@@ -1,16 +1,21 @@
 package tz.co.nezatech.dsetp.util.message;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tz.co.nezatech.dsetp.util.GZipUtil;
 import tz.co.nezatech.dsetp.util.TCPUtil;
 import tz.co.nezatech.dsetp.util.db.ConnectionPool;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class StartOfDayDownload {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StartOfDayDownload.class);
+
     public static byte[] decompress(byte[] bytes) {
         int headers = 61;//Remove TH(4), MH(29), DH(24) + 4 trailing
         int size = bytes.length - headers;
@@ -77,6 +82,49 @@ public class StartOfDayDownload {
                 }
                 System.out.println(params);
             });
+        } else if (dataType == MarketDataType.INSTRUMENTS_DATA) {
+            LOGGER.debug("Holiday Data: " + TCPUtil.text(bytesList));
+            int pointer = 0;
+            do {
+
+                HikariDataSource ds = ConnectionPool.dataSource();
+                try (Connection con = ds.getConnection()){
+                    PreparedStatement s = con.prepareStatement("INSERT INTO agm_holiday_data (hd_holiday_sequence, hd_country_code, hd_holiday_date, hd_reminder_only,  hd_is_early_close, hd_is_furures_close_out) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    int size = 4;
+                    int seqNo = TCPUtil.toInt(TCPUtil.extract(bytesList, pointer, size), true);
+                    pointer += size;
+                    s.setObject(1, seqNo);
+
+                    size = TCPUtil.toInt(TCPUtil.extract(bytesList, pointer++, 1), true);
+                    String countryCode = new String(TCPUtil.extract(bytesList, pointer, size));
+                    pointer += size;
+                    s.setObject(2, countryCode);
+
+                    size = 12;
+                    byte[] dbts = TCPUtil.extract(bytesList, pointer, size);
+                    pointer += size;
+                    String date = String.format("%04d-%02d-%02d",
+                            TCPUtil.toInt(TCPUtil.extract(dbts, 0, 4), true),
+                            TCPUtil.toInt(TCPUtil.extract(dbts, 4, 4), true),
+                            TCPUtil.toInt(TCPUtil.extract(dbts, 8, 4), true)
+                    );
+                    s.setObject(3, date);
+
+                    byte reminderOnly = bytesList[pointer++];
+                    s.setObject(4, reminderOnly);
+
+                    byte isEarlyClose = bytesList[pointer++];
+                    s.setObject(5, isEarlyClose);
+
+                    byte isFuturesCloseOut = bytesList[pointer++];
+                    s.setObject(6, isFuturesCloseOut);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    LOGGER.error(e.getMessage());
+                }
+
+            } while (pointer < bytesList.length);
+
         }
         return imap;
     }

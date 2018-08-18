@@ -1,8 +1,8 @@
 package tz.co.nezatech.dsetp.util;
 
 import com.sun.net.httpserver.Headers;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
-import tz.co.nezatech.dsetp.util.db.ConnectionPool;
 import tz.co.nezatech.dsetp.util.message.FutureContractSubscription;
 import tz.co.nezatech.dsetp.util.message.MarketDataType;
 import tz.co.nezatech.dsetp.util.message.MessageType;
@@ -14,7 +14,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class TCPUtil {
 
@@ -28,7 +31,7 @@ public class TCPUtil {
 
     public static byte[] extract(byte[] src, int from, int size) {
         byte[] tmp = new byte[size];
-        System.arraycopy(src,from, tmp, 0, size);
+        System.arraycopy(src, from, tmp, 0, size);
         return tmp;
     }
 
@@ -163,6 +166,7 @@ public class TCPUtil {
     }
 
     public static String text(byte[] bytes) {
+        if (bytes == null) bytes = new byte[]{};
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
             sb.append(String.format("%02X ", b));
@@ -240,15 +244,16 @@ public class TCPUtil {
         return ByteBuffer.wrap(bytes).getInt();
     }
 
-    public static Long toLong(byte[] bytes){
+    public static Long toLong(byte[] bytes) {
         return ByteBuffer.wrap(bytes).getLong();
     }
-    public static Long toLong(byte[] bytes, boolean switchEndian){
-        return toLong(switchEndian?TCPUtil.switchEndian(bytes):bytes);
+
+    public static Long toLong(byte[] bytes, boolean switchEndian) {
+        return toLong(switchEndian ? TCPUtil.switchEndian(bytes) : bytes);
     }
 
     public static Integer toInt(byte[] bytes, boolean switchEndian) {
-        return toInt(switchEndian?TCPUtil.switchEndian(bytes):bytes);
+        return toInt(switchEndian ? TCPUtil.switchEndian(bytes) : bytes);
     }
 
     public static Double toDouble(byte[] bytes) {
@@ -256,7 +261,7 @@ public class TCPUtil {
     }
 
     public static Double toDouble(byte[] bytes, boolean switchEndian) {
-        return toDouble(switchEndian?TCPUtil.switchEndian(bytes):bytes);
+        return toDouble(switchEndian ? TCPUtil.switchEndian(bytes) : bytes);
     }
 
     private static Map readStartOfDay(Headers headers, String body) {
@@ -270,30 +275,19 @@ public class TCPUtil {
         List<byte[]> l = new LinkedList<>();
         String text = TCPUtil.text(input).trim();
         String p = TCPUtil.text(pattern).trim();
-        int inner = text.indexOf(p);
-        final int len = input.length;
-        boolean firstRead = false;
-        for (int i = 0; i < len; ) {
-            int indexOf = text.indexOf(p, i + 1);
-            if (indexOf > i) {
-                int newI = indexOf;
-                String sub = null;
-                if (inner == 0) {
-                    sub = text.substring(i, newI);
-                } else if (firstRead) {
-                    sub = text.substring(i - inner, newI - inner);
-                }
-                if (sub != null) {
-                    byte[] sec = TCPUtil.hexToBytes(sub);
-                    l.add(sec);
-                } else {
-                    firstRead = true;
-                }
-                i = newI;
-            } else {
-                break;
+
+        int count = 0, fromIndex = 0;
+        int prev = -1;
+        while ((fromIndex = text.indexOf(p, fromIndex)) != -1) {
+            if (prev != -1) {
+                String sub = text.substring(prev, fromIndex);
+                l.add(TCPUtil.hexToBytes(sub));
             }
+            prev = fromIndex;
+            count++;
+            fromIndex++;
         }
+        System.out.println("Total occurrences: " + count);
         return l;
     }
 

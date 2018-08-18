@@ -8,8 +8,10 @@ import tz.co.nezatech.dsetp.util.TCPUtil;
 import tz.co.nezatech.dsetp.util.config.Config;
 import tz.co.nezatech.dsetp.util.config.ConnectionConfig;
 import tz.co.nezatech.dsetp.util.db.ConnectionPool;
-import tz.co.nezatech.dsetp.util.exception.TCPConnectionException;
-import tz.co.nezatech.dsetp.util.message.*;
+import tz.co.nezatech.dsetp.util.message.MarketDataType;
+import tz.co.nezatech.dsetp.util.message.MessageReader;
+import tz.co.nezatech.dsetp.util.message.MessageType;
+import tz.co.nezatech.dsetp.util.message.TCPMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,25 +21,27 @@ import java.net.Socket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 public class RunClient extends MessageReader {
-    Logger logger = LoggerFactory.getLogger(RunClient.class.getName());
+    private Logger logger = LoggerFactory.getLogger(RunClient.class.getName());
     Config conCfg;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
 
     short appState = 0;
-    int msgSequence = 0;
-    final String ip;
-    final String port;
+    //int msgSequence = 0;
+    private final String ip;
+    private final String port;
 
     public RunClient() {
         super();
@@ -70,14 +74,14 @@ public class RunClient extends MessageReader {
         }
     }
 
-    protected void stopAppDueToFailure(String msg) {
+    void stopAppDueToFailure(String msg) {
         System.err.println(msg);
         logger.error(msg);
         ConnectionPool.dataSource().close();
         System.exit(-1);
     }
 
-    void init() {
+    private void init() {
         logger.debug(String.format("Starting TCP/IP connection -> %s:%s", ip, port));
         try {
             try (final Socket con = new Socket(ip, Integer.parseInt(port))) {
@@ -107,14 +111,14 @@ public class RunClient extends MessageReader {
         }
     }
 
-    protected void restartApp(int pause) {
+    void restartApp(int pause) {
         logger.debug("App will try to re-initiate this connection in " + pause + " seconds");
         pause(pause);
         init();
     }
 
     @Override
-    public void process(byte[] fullMsg, String id, byte[] mh, byte[] msg, OutputStream output) throws IOException {
+    public void process(byte[] fullMsg, String id, byte[] mh, byte[] msg, OutputStream output) {
         if (msg == null) {
             logger.debug("<< Empty message, could be a heartbeat");
             return;
@@ -131,31 +135,81 @@ public class RunClient extends MessageReader {
         ClientMessageProcessor.process(this, type, fullMsg, msg, output);
     }
 
-
-
-
-    protected void sendLogin(byte[] msg, OutputStream output) throws IOException {
-        TCPMessage login = login(msgSequence, msg);
+    void sendLogin(byte[] msg, OutputStream output) {
+        TCPMessage login = login(msg);
+        assert login != null;
         ClientMessageProcessor.sendMessage(login, MessageType.LOGIN, output);
     }
 
-    public void enableHeartbeat(String id, OutputStream output) {
-        logger.debug("Start heartbeat messages");
+    void enableHeartbeat(OutputStream output) {
+        final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        logger.debug("Market is open");
         final Runnable hb = () -> {
             logger.info(">> Sending heartbeat");
-            ClientMessageProcessor.sendMessage(this,"", MessageType.HEART_BEAT_CLT, output);
+            ClientMessageProcessor.sendMessage(conCfg, "".getBytes(), MessageType.HEART_BEAT_CLT, output);
         };
         scheduler.scheduleAtFixedRate(hb, 60, 60, SECONDS);
+        scheduler.scheduleAtFixedRate(() -> {
+                    logger.debug("Market is closing, requesting MTM Data");
+                    byte[] date = TCPUtil.dateNow(0);
+
+                    byte[] startOfDayDownload = new byte[24];
+
+                    startOfDayDownload[1] = (byte) 0; // unused
+                    startOfDayDownload[2] = (byte) 0; // last piece of chunk
+                    startOfDayDownload[3] = (byte) 0; //re-request
+                    System.arraycopy(TCPUtil.bytesEmpty(4), 0, startOfDayDownload, 4, 4); // action
+                    System.arraycopy(TCPUtil.bytesEmpty(4), 0, startOfDayDownload, 8, 4); // specific record
+                    System.arraycopy(date, 0, startOfDayDownload, 12, date.length); // date
+
+                    startOfDayDownload[0] = MarketDataType.MTM_DATA.getType(); // data type
+                    ClientMessageProcessor.sendMessage(conCfg, startOfDayDownload, MessageType.START_OF_DAY_DOWNLOAD, output);
+                }, delay(15, 05, 0),
+                24 * 60 * 60, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> {
+                    logger.debug("Market is closing, Log out");
+                    ClientMessageProcessor.sendMessage(conCfg, "".getBytes(), MessageType.LOG_OUT, output);
+
+                    //stop the scheduler for today
+                    scheduler.shutdownNow();
+                    appState = 99;
+                    marketClosed();
+                }, delay(15, 31, 0),
+                24 * 60 * 60, TimeUnit.SECONDS);
     }
 
-    private TCPMessage login(int seq, byte[] key) {
+    private void marketClosed() {
+        final ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
+        scheduler2.scheduleAtFixedRate(() -> {
+                    logger.debug("Market is open now");
+                    appState = -1;
+                    scheduler2.shutdownNow();
+                    restartApp(60);
+                }, delay(7, 0, 0),
+                24 * 60 * 60, TimeUnit.SECONDS);
+    }
+
+    private Long delay(int withHour, int withMin, int withSec) {
+        LocalDateTime localNow = LocalDateTime.now();
+        ZoneId currentZone = ZoneId.of("Africa/Dar_es_Salaam");
+        ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
+        ZonedDateTime zonedNext;
+        zonedNext = zonedNow.withHour(withHour).withMinute(withMin).withSecond(withSec);
+        if (zonedNow.compareTo(zonedNext) > 0) zonedNext = zonedNext.plusDays(1);
+
+        Duration duration = Duration.between(zonedNow, zonedNext);
+        return duration.getSeconds();
+    }
+
+    private TCPMessage login(byte[] key) {
         try {
+            logger.debug("Key");
             String pwd = conCfg.getProperty("sender.password");
             byte[] encrypt = RSAUtil.encryptFromXmlKey(pwd, new String(key));
             byte[] loginMsg = new byte[encrypt.length + 4];
             System.arraycopy(TCPUtil.getBytes(encrypt.length), 0, loginMsg, 0, 4);
             System.arraycopy(encrypt, 0, loginMsg, 4, encrypt.length);
-            return ClientMessageProcessor.frmConfig(this, loginMsg, seq, MessageType.LOGIN);
+            return ClientMessageProcessor.frmConfig(conCfg, loginMsg, MessageType.LOGIN);
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             e.printStackTrace();

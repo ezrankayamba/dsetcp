@@ -20,8 +20,8 @@ public class TestApp {
         ConnectionPool.configure(props);
 
         //read(bytes);
-        //String file = "D:\\TempFiles\\msg99Decompressed.txt";
-        String file = "D:\\TempFiles\\msg59.txt";
+        String file = "D:\\TempFiles\\msg99Decompressed.txt";
+        //String file = "D:\\TempFiles\\msg59.txt";
         //String file = "D:\\TempFiles\\msg132.txt";
         byte[] bytes = TCPUtil.readMsg(file);
         /*int poiter = 32;
@@ -35,7 +35,7 @@ public class TestApp {
             String errorMsg= new String(TCPUtil.extract(bytes, poiter, size));
             System.out.println(errorMsg);
         }*/
-        //FutureContractSubscription.read(bytes);
-        FutureContractSubscription.readDisplayUpdate(bytes, true);
+        FutureContractSubscription.read(bytes);
+        //FutureContractSubscription.readDisplayUpdate(bytes, true);
     }
 }

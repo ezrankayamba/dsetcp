@@ -36,7 +36,6 @@ public class FutureContractSubscription {
         byte[] pattern = TCPUtil.extract(bytesList, 0, 4);
         TCPUtil.split(pattern, bytesList).forEach(bytes -> {
             FutureContractSubscription.readDisplayUpdate(bytes);
-            //System.out.println(m);
         });
         return params;
     }
@@ -50,7 +49,7 @@ public class FutureContractSubscription {
         try {
             HikariDataSource ds = ConnectionPool.dataSource();
             try (Connection con = ds.getConnection()) {
-                PreparedStatement s = con.prepareStatement("INSERT INTO agm_trading_data (td_contract, td_contract_name, td_mid_price, td_last_dealt_price,  td_last_dealt_time,  td_deal_volume,  td_high_price,  td_low_price,  td_day_volume,  td_last_qty,  td_last_action, td_price, td_change,  td_contract_status,  td_last_traded_qty,  td_update_time,  td_vwap,  td_closing_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                PreparedStatement s = con.prepareStatement("INSERT INTO agm_trading_data (td_contract, td_contract_name, td_mid_price, td_last_dealt_price,  td_last_dealt_time,  td_deal_volume,  td_high_price,  td_low_price,  td_day_volume,  td_last_qty,  td_last_action, td_price, td_market_cap, td_change,  td_contract_status,  td_last_traded_qty,  td_update_time,  td_vwap,  td_closing_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 int pointer = 0;
 
                 pointer++;//skip 1, anonymous trading [1]
@@ -89,8 +88,8 @@ public class FutureContractSubscription {
                 tmp = new byte[size];
                 System.arraycopy(bytes, pointer, tmp, 0, size);
                 pointer += size;
-                m.put("td_last_dealt_time" + p, contract.getDate() + " " + TCPUtil.timeText(tmp));
-                s.setString(++p, contract.getDate() + " " +TCPUtil.timeText(tmp));//5
+                m.put("td_last_dealt_time" + p, contract.getSecDate() + " " + TCPUtil.timeText(tmp));
+                s.setString(++p, contract.getSecDate() + " " + TCPUtil.timeText(tmp));//5
 
 
                 // Deal volume (8) [77]
@@ -173,7 +172,8 @@ public class FutureContractSubscription {
                 tmp = new byte[size];
                 System.arraycopy(bytes, pointer, tmp, 0, size);
                 pointer += size;
-                //params.put("td_last_action", TCPUtil.text(tmp));
+                m.put("td_market_cap", TCPUtil.toDouble(tmp, true));
+                s.setDouble(++p, TCPUtil.toDouble(tmp, true));
 
 
                 // Change(8)
@@ -270,8 +270,8 @@ public class FutureContractSubscription {
                 tmp = new byte[size];
                 System.arraycopy(bytes, pointer, tmp, 0, size);
                 pointer += size;
-                m.put("td_update_time" + p, contract.getDate() + " " + TCPUtil.timeText(tmp));
-                s.setString(++p, contract.getDate() + " " +TCPUtil.timeText(tmp));
+                m.put("td_update_time" + p, contract.getSecDate() + " " + TCPUtil.timeText(tmp));
+                s.setString(++p, contract.getSecDate() + " " + TCPUtil.timeText(tmp));
 
                 //VWAP (8)
                 size = 8;
@@ -301,9 +301,9 @@ public class FutureContractSubscription {
                 //params.put("td_last_action", TCPUtil.text(tmp));
 
                 int records = s.executeUpdate();
-                System.out.println("Recorded new entry for trade data: " + records);
+                //System.out.println("Recorded new entry for trade data: " + records);
 
-                System.out.println(m);
+                //System.out.println(m);
 
             } catch (SQLException e) {
                 System.err.println(e.getErrorCode());

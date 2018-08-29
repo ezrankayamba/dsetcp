@@ -30,7 +30,7 @@ public class StartOfDayDownload {
     }
 
     public static Map read(MarketDataType dataType, byte[] bytesList) {
-        int structSize = 478 * 3;// 3 is per hex space formulae
+        int structSize = 486 * 3;// 3 is per hex space formulae
         Map imap = new LinkedHashMap();
         System.out.println("Data Type: " + dataType);
         if (dataType == MarketDataType.INSTRUMENTS_DATA) {
@@ -40,7 +40,7 @@ public class StartOfDayDownload {
                 Map params = new LinkedHashMap();
                 HikariDataSource ds = ConnectionPool.dataSource();
                 try (Connection con = ds.getConnection()) {
-                    PreparedStatement s = con.prepareStatement("INSERT INTO agm_instrument (instru_sequence, instru_name, instru_type_number, instru_isin_code,  instru_description) VALUES (?, ?, ?, ?, ?, ?)");
+                    PreparedStatement s = con.prepareStatement("INSERT INTO agm_instrument (instru_sequence, instru_name, instru_type_number, instru_isin_code, instru_description) VALUES (?, ?, ?, ?, ?)");
 
                     int pointer = 0;
                     int p = 0;
@@ -77,12 +77,15 @@ public class StartOfDayDownload {
                     pointer += size;
                     params.put("instru_description", new String(tmp));
                     s.setObject(++p, new String(tmp));
+
+                    int records = s.executeUpdate();
+                    System.out.println("Recorded new entry for instrument data: " + records);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 System.out.println(params);
             });
-        } else if (dataType == MarketDataType.INSTRUMENTS_DATA) {
+        } else if (dataType == MarketDataType.HOLIDAY) {
             LOGGER.debug("Holiday Data: " + TCPUtil.text(bytesList));
             int pointer = 0;
             do {

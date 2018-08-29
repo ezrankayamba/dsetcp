@@ -9,7 +9,7 @@
         <version>1.0</version>
     </parent>
     <properties>
-        <script.main.class>RunClient</script.main.class>
+        <script.main.class>fsm.ClientFSM</script.main.class>
         <script.name>${project.artifactId}</script.name>
         <script.base.package>${project.groupId}</script.base.package>
         <start-class>${script.base.package}.${script.name}.${script.main.class}</start-class>
@@ -20,6 +20,11 @@
             <groupId>tz.co.nezatech.dsetcp</groupId>
             <artifactId>util</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>

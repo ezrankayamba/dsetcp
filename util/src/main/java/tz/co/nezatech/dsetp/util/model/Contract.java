@@ -21,13 +21,17 @@ public class Contract {
 
     public Contract(String name) {
         String expireDays = System.getProperty("ExpireDays");
+        int daysOffset;
         if (expireDays != null) {
             System.out.println("Use custom " + expireDays + " 3 days");
-            date = TCPUtil.dateNow(Integer.parseInt(expireDays));
+            daysOffset = Integer.parseInt(expireDays);
         } else {
-            System.out.println("Use default 3 days");
-            date = TCPUtil.dateNow(3);
+            System.out.println("Use default 3 days + holiday/weekends");
+            daysOffset = 3 + TCPUtil.holidays();
         }
+        logger.debug("Days Offset: " + daysOffset);
+        System.out.println("Days Offset: " + daysOffset);
+        date = TCPUtil.dateNow(daysOffset);
         secondaryDate = TCPUtil.dateEmpty();
         instrumentName = new byte[5];
         instrumentName[0] = (byte) name.length();
@@ -86,10 +90,12 @@ public class Contract {
     public String getPrimaryName() {
         return new String(instrumentName).trim();
     }
+
     public String getDate() {
         int[] dateArr = TCPUtil.fromDate(date);
         return String.format("%04d-%02d-%02d", dateArr[0], dateArr[1], dateArr[2]);
     }
+
     public String getSecDate() {
         int[] dateArr = TCPUtil.fromDate(secondaryDate);
         return String.format("%04d-%02d-%02d", dateArr[0], dateArr[1], dateArr[2]);

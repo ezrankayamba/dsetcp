@@ -16,10 +16,17 @@ public class StreamSectionsHandler implements RequestHandler {
         System.out.println("Handling stream sectioning");
         StringBuilder sb = new StringBuilder();
         try {
-            String key = headers.getFirst("HEX-SEARCH-KEY");
-            TCPUtil.split(TCPUtil.hexToBytes(key), TCPUtil.hexToBytes(body)).forEach(bytes -> {
-                sb.append(TCPUtil.text(bytes)).append("\r\n");
-            });
+            if(headers.containsKey("HEX-SEARCH-KEY")){
+                String key = headers.getFirst("HEX-SEARCH-KEY");
+                TCPUtil.split(TCPUtil.hexToBytes(key), TCPUtil.hexToBytes(body)).forEach(bytes -> {
+                    sb.append(TCPUtil.text(bytes)).append("\r\n");
+                });
+            }else {
+                int len = Integer.parseInt(headers.getFirst("HEX-SEARCH-LEN"));
+                TCPUtil.split(len, TCPUtil.hexToBytes(body)).forEach(bytes -> {
+                    sb.append(TCPUtil.text(bytes)).append("\r\n");
+                });
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

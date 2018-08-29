@@ -130,7 +130,7 @@ public class RunClient extends MessageReader {
         logger.debug(String.format("<< Message Header | SeqNo: %d, Username: %s, UserNo: %s, Time: %s", seqNo, username, userNo, time));
         logger.debug("<< Message(HEX): " + TCPUtil.text(msg));
         MessageType type = MessageType.byType(mh[28]);
-        logger.debug("App State: " + appState);
+        logger.debug("App FSMState: " + appState);
         logger.debug("<< MessageType: " + type);
         ClientMessageProcessor.process(this, type, fullMsg, msg, output);
     }

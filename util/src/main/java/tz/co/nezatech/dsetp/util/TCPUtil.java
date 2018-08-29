@@ -13,11 +13,13 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.DecimalFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TCPUtil {
 
@@ -303,5 +305,56 @@ public class TCPUtil {
             i = newI;
         }
         return l;
+    }
+
+    public static int holidays() {
+        List<LocalDate> hds = holidayDates();
+        LocalDate date = LocalDate.now(ZoneId.of("Africa/Dar_es_Salaam"));
+        int workDay = 0;
+        int add = 0;
+        while (workDay < 3) {
+            if (isWorkDay(date, hds)) {
+                workDay++;
+            } else {
+                add++;
+            }
+            date = date.plusDays(1);
+        }
+        return add;
+    }
+
+    private static boolean isWorkDay(LocalDate date, List<LocalDate> hds) {
+        DayOfWeek day = date.getDayOfWeek();
+        if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY || hds.contains(date)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static List<LocalDate> holidayDates() {
+        return holidays == null ? List.of() : holidays;
+    }
+
+    private static List<LocalDate> holidays;
+
+    public static List<LocalDate> updateHolidays(String path) {
+        System.out.println("Holidays Path: " + path);
+        StringWriter writer = new StringWriter();
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            IOUtils.copy(new FileInputStream(file), writer, "utf-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        writer.flush();
+
+        List<String> list = Arrays.asList(writer.toString().split("\r\n"));
+        List<LocalDate> tmp = list.stream().filter(s -> !s.trim().isEmpty()).map(LocalDate::parse).collect(Collectors.toList());
+        holidays = tmp;
+        return holidayDates();
     }
 }

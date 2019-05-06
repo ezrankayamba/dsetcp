@@ -45,11 +45,14 @@ public class FutureContractSubscription {
     }
 
     public static Map readDisplayUpdate(byte[] bytes) {
-        Map m = new LinkedHashMap();
+        logger.debug("FCS Message: " + TCPUtil.text(bytes));
+        Map<String, Object> m = new LinkedHashMap();
+        String sql = "INSERT INTO agm_trading_data (td_contract, td_contract_name, td_mid_price, td_last_dealt_price,  td_last_dealt_time,  td_deal_volume,  td_high_price,  td_low_price,  td_day_volume,  td_last_qty,  td_last_action, td_price, td_market_cap, td_change,  td_contract_status,  td_last_traded_qty,  td_update_time,  td_vwap,  td_closing_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        logger.debug("SQL: " + sql);
         try {
             HikariDataSource ds = ConnectionPool.dataSource();
             try (Connection con = ds.getConnection()) {
-                PreparedStatement s = con.prepareStatement("INSERT INTO agm_trading_data (td_contract, td_contract_name, td_mid_price, td_last_dealt_price,  td_last_dealt_time,  td_deal_volume,  td_high_price,  td_low_price,  td_day_volume,  td_last_qty,  td_last_action, td_price, td_market_cap, td_change,  td_contract_status,  td_last_traded_qty,  td_update_time,  td_vwap,  td_closing_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                PreparedStatement s = con.prepareStatement(sql);
                 int pointer = 0;
 
                 pointer++;//skip 1, anonymous trading [1]
@@ -63,6 +66,7 @@ public class FutureContractSubscription {
                 Contract contract = new Contract(tmp);
                 m.put("td_contract" + p, contract.toText());
                 s.setString(++p, contract.toText());//1
+                m.put("td_contract_name" + p, contract.getPrimaryName());
                 s.setString(++p, contract.getPrimaryName());//2
 
                 // Mid price (8) [57]
@@ -300,6 +304,7 @@ public class FutureContractSubscription {
                 pointer += size;
                 //params.put("td_last_action", TCPUtil.text(tmp));
 
+                logger.debug("Params: " + m);
                 int records = s.executeUpdate();
                 //System.out.println("Recorded new entry for trade data: " + records);
 

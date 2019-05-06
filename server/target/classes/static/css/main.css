@@ -1,0 +1,17 @@
+* {
+    font-family: 'DejaVu Serif', Georgia, "Times New Roman", Times, serif;
+}
+html, body{
+    width: 100%;
+    background: #f0f8ff;
+}
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+#main {
+    flex: 1 0 auto;
+    padding: .5rem 1.5rem;
+}

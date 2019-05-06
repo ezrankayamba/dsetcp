@@ -2,6 +2,7 @@ package tz.co.nezatech.dsetp.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tz.co.nezatech.dsetp.util.config.Config;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -11,10 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPublicKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.*;
 import java.util.Base64;
 
 public class RSAUtil {
@@ -45,33 +43,14 @@ public class RSAUtil {
         return new String(bs, "UTF8");
     }
 
-    public static PublicKey getPublicKeyXml(String xml) {
-        PublicKey publicKey = null;
-        try {
 
-            org.apache.commons.codec.binary.Base64 base64 = new org.apache.commons.codec.binary.Base64();
-            XmlMapper mapper = new XmlMapper();
-            RSAKeyValue rsa = mapper.readValue(xml, RSAKeyValue.class);
-            byte[] mod = base64.decode(rsa.getModulus());
-            byte[] exp = base64.decode(rsa.getExponent());
-            BigInteger modules = new BigInteger(1,mod);
-            BigInteger exponent = new BigInteger(1, exp);
-            KeyFactory factory = KeyFactory.getInstance("RSA");
-            RSAPublicKeySpec pubSpec = new RSAPublicKeySpec(modules, exponent);
-            PublicKey pubKey = factory.generatePublic(pubSpec);
-            return pubKey;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return publicKey;
-    }
     public static String getPublicKeyAsXml(RSAPublicKey pk) {
-        String xml=null;
+        String xml = null;
         try {
 
             org.apache.commons.codec.binary.Base64 base64 = new org.apache.commons.codec.binary.Base64();
             ObjectMapper mapper = new XmlMapper();
-            RSAKeyValue rsa =new RSAKeyValue();
+            RSAKeyValue rsa = new RSAKeyValue();
             rsa.setExponent(new String(base64.encode(pk.getPublicExponent().toByteArray())));
             rsa.setModulus(new String(base64.encode(pk.getModulus().toByteArray())));
             xml = mapper.writeValueAsString(rsa);
@@ -106,10 +85,39 @@ public class RSAUtil {
         return cipher.doFinal(data.getBytes());
     }
 
-    public static byte[] encryptFromXmlKey(String data, String publicKey) throws BadPaddingException, IllegalBlockSizeException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, getPublicKeyXml(publicKey));
+    public static byte[] encryptFromXmlKey(String data, String publicKey) throws BadPaddingException, IllegalBlockSizeException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
+        return encryptFromXmlKey(data, publicKey, "RSA", "RSA");
+    }
+
+    public static byte[] encryptFromXmlKey(String data, String publicKey, String rsa, String rsaKeyfactory) throws BadPaddingException, IllegalBlockSizeException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
+        Cipher cipher = Cipher.getInstance(rsa);
+        PublicKey pub = getPublicKeyXml(publicKey, rsaKeyfactory);
+        cipher.init(Cipher.ENCRYPT_MODE, pub);
         return cipher.doFinal(data.getBytes());
+    }
+
+    public static PublicKey getPublicKeyXml(String xml) {
+        return getPublicKeyXml(xml, "RSA");
+    }
+
+    public static PublicKey getPublicKeyXml(String xml, String rsaKeyfactory) {
+        PublicKey publicKey = null;
+        try {
+
+            org.apache.commons.codec.binary.Base64 base64 = new org.apache.commons.codec.binary.Base64();
+            XmlMapper mapper = new XmlMapper();
+            RSAKeyValue rsa = mapper.readValue(xml, RSAKeyValue.class);
+            byte[] mod = base64.decode(rsa.getModulus());
+            byte[] exp = base64.decode(rsa.getExponent());
+            BigInteger modules = new BigInteger(1, mod);
+            BigInteger exponent = new BigInteger(1, exp);
+            KeyFactory factory = KeyFactory.getInstance(rsaKeyfactory);
+            RSAPublicKeySpec pubSpec = new RSAPublicKeySpec(modules, exponent);
+            publicKey = factory.generatePublic(pubSpec);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return publicKey;
     }
 
     public static String decrypt(byte[] data, PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
@@ -135,7 +143,9 @@ public class RSAUtil {
                     "S1XGYvpEWwZpuSnXt6CLANMLEn64PC1RPpXzFiIAOs=</Modulus>\n" +
                     "   <Exponent>AQAB</Exponent>\n" +
                     "</RSAKeyValue>";
-            getPublicKeyXml(xml);
+            PublicKey publicKeyXml = getPublicKeyXml(xml);
+            String s = publicKeyXml.toString();
+
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }

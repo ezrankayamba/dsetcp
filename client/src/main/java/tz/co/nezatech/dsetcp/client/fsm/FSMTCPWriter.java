@@ -58,9 +58,12 @@ public class FSMTCPWriter {
     }
 
     private static TCPMessage login(byte[] key, String username, String pwd, int userNo) throws Exception {
-        byte[] encrypt = RSAUtil.encryptFromXmlKey(pwd, new String(key));
-        byte[] loginMsg = new byte[encrypt.length + 4];
-        System.arraycopy(TCPUtil.getBytes(encrypt.length), 0, loginMsg, 0, 4);
+        LOGGER.debug("RSA CIPHER: " + ClientFSM.rsaCipher);
+        byte[] encrypt = RSAUtil.encryptFromXmlKey(pwd, new String(key), ClientFSM.rsaCipher, ClientFSM.rsaCipherKeyfactory);
+        //byte[] loginMsg = new byte[encrypt.length + 4];
+        //byte[] loginMsg = new byte[312];
+        byte[] loginMsg = new byte[503];//Extra zeroes
+        System.arraycopy(TCPUtil.getBytes(encrypt.length, true), 0, loginMsg, 0, 4);
         System.arraycopy(encrypt, 0, loginMsg, 4, encrypt.length);
         //return new TCPMessage(loginMsg, MsgSequencer.next(), username, userNo, TCPUtil.timeNow(), MessageType.LOGIN.getType());
         return getMesage(loginMsg, username, userNo, MessageType.LOGIN);

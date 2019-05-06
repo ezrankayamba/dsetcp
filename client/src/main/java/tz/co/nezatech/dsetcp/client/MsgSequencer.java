@@ -7,12 +7,17 @@ import java.time.LocalTime;
 
 public class MsgSequencer {
     private static Logger logger = LoggerFactory.getLogger(MsgSequencer.class);
-    private static Integer seq = 0;
+    private static Integer seq = -1;
 
     public static synchronized Integer next() {
         seq++;
         logger.debug("Generated new sequence number: " + seq);
         return seq;
+    }
+
+    public static synchronized void reset() {
+        seq = -1;
+        logger.debug("Sequence reset: " + seq);
     }
 
     public static void main(String[] args) {

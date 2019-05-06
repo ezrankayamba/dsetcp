@@ -1,14 +1,12 @@
 package tz.co.nezatech.dsetcp.server;
 
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tz.co.nezatech.dsetp.util.RSAUtil;
-import tz.co.nezatech.dsetp.util.RandomUtil;
-import tz.co.nezatech.dsetp.util.TCPUtil;
-import tz.co.nezatech.dsetp.util.TestConsts;
+import tz.co.nezatech.dsetp.util.*;
 import tz.co.nezatech.dsetp.util.config.Config;
 import tz.co.nezatech.dsetp.util.config.ConnectionConfig;
 import tz.co.nezatech.dsetp.util.handler.MyHttpHandler;
@@ -21,13 +19,16 @@ import tz.co.nezatech.dsetp.util.message.MessageReader;
 import tz.co.nezatech.dsetp.util.message.MessageType;
 import tz.co.nezatech.dsetp.util.message.TCPMessage;
 
+import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
+import java.security.*;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.RSAPrivateCrtKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,14 +43,42 @@ public class RunServer {
     KeyPair keyPair;
     private String[] args;
 
+    static {
+        try {
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048);
+            KeyPair kp = kpg.generateKeyPair();
+            Key pub = kp.getPublic();
+            Key pvt = kp.getPrivate();
+
+
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            RSAPublicKeySpec ks = kf.getKeySpec(pub, RSAPublicKeySpec.class);
+
+            org.apache.commons.codec.binary.Base64 base64 = new org.apache.commons.codec.binary.Base64();
+            XmlMapper mapper = new XmlMapper();
+            RSAKeyValue rsaKV = new RSAKeyValue(base64.encode(ks.getModulus()).toString(), base64.encode(ks.getPublicExponent()).toString());
+            //XMLStreamWriter
+            //mapper.writeValue(null,rsaKV);
+            //String.format("<RSAKeyValue><Modulus>%s</Modulus><Exponent>%s</Exponent></RSAKeyValue>", Base64.getEncoder().encode(ks.getModulus().));
+
+            System.out.println("<RSAKeyValue>");
+            System.out.println("    <Modulus>" + ks.getModulus() + "</Modulus>");
+            System.out.println("    <Exponent>" + ks.getPublicExponent() + "</Exponent>");
+            System.out.println("</RSAKeyValue>");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public RunServer(String[] args) {
         this.args = args;
     }
 
     public static void main(String[] args) {
         RunServer server = new RunServer(args);
-        server.runHttp();
-        server.init();
+        //server.runHttp();
+        //server.init();
     }
 
     private void runHttp() {

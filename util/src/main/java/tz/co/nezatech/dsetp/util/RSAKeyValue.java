@@ -12,6 +12,14 @@ public class RSAKeyValue {
     @JacksonXmlProperty(localName = "Exponent")
     private String exponent;
 
+    public RSAKeyValue(String modulus, String exponent) {
+        this.modulus = modulus;
+        this.exponent = exponent;
+    }
+
+    public RSAKeyValue() {
+    }
+
     public String getModulus() {
         return modulus;
     }

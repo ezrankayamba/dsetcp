@@ -24,12 +24,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class ClientFSM {
-    private static final String DATA_HOLIDAYS_FILE = "holidays.txt";
+public class ClientFSM implements FSMTCPSessionHandler.FSMSessionEventListener {
+    private static final String DATA_HOLIDAYS_FILE = "countWorkDays.txt";
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientFSM.class);
     private FSMState state = FSMState.INIT_TCP;
     private boolean restart = false;
     private static Config config;
+    public static String rsaCipher = "RSA";
+    public static String rsaCipherKeyfactory = "RSA";
 
     static Config getConfig() {
         if (config == null)
@@ -39,6 +41,12 @@ public class ClientFSM {
 
     public static void main(String[] args) {
         LOGGER.debug("FSM starting...");
+        if (args.length >= 1) {
+            rsaCipher = args[0];
+            if (args.length >= 2) {
+                rsaCipherKeyfactory = args[1];
+            }
+        }
         ClientFSM fsm = new ClientFSM();
         fsm.init();
     }
@@ -181,32 +189,7 @@ public class ClientFSM {
         }
         state = FSMProcessor.process(state, read, outputStream, output -> {
             LOGGER.debug("Session established");
-            sessionHandler.set(new FSMTCPSessionHandler(new FSMTCPSessionHandler.FSMSessionEventListener() {
-                @Override
-                public void marketClosing() {
-                    state = FSMState.MARKET_CLOSING;
-                    LOGGER.debug("Market closing...");
-                }
-
-                @Override
-                public void marketClosed() {
-                    state = FSMState.MARKET_CLOSED;
-                    LOGGER.debug("Market closed, App will restart in 1 min");
-                    new Thread(() -> {
-                        pause(60);
-                        init(true);
-                    }).start();
-                }
-
-                @Override
-                public void disconnected() {
-                    LOGGER.error("Market disconnected, App will restart in 1 min");
-                    new Thread(() -> {
-                        pause(60);
-                        init(true);
-                    }).start();
-                }
-            }, output));
+            sessionHandler.set(new FSMTCPSessionHandler(this, output));
             sessionHandler.get().sessionEstablished();
         });
     }
@@ -253,6 +236,31 @@ public class ClientFSM {
             } catch (Exception e) {
                 System.out.println("Error: " + e.toString());
             }
+        }).start();
+    }
+
+    @Override
+    public void marketClosing() {
+        state = FSMState.MARKET_CLOSING;
+        LOGGER.debug("Market closing...");
+    }
+
+    @Override
+    public void marketClosed() {
+        state = FSMState.MARKET_CLOSED;
+        LOGGER.debug("Market closed, App will restart in 1 min");
+        new Thread(() -> {
+            pause(60);
+            init(true);
+        }).start();
+    }
+
+    @Override
+    public void disconnected() {
+        LOGGER.error("Market disconnected, App will restart in 1 min");
+        new Thread(() -> {
+            pause(20);
+            init(true);
         }).start();
     }
 

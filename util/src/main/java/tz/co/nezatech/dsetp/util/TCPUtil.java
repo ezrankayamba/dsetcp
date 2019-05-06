@@ -167,11 +167,22 @@ public class TCPUtil {
         return ByteBuffer.allocate(4).putInt(value).array();
     }
 
+    public static byte[] getBytes(int value, boolean littleEndian) {
+        byte[] bytes = getBytes(value);
+        return littleEndian ? switchEndian(bytes) : bytes;
+    }
+
     public static String text(byte[] bytes) {
         if (bytes == null) bytes = new byte[]{};
         StringBuilder sb = new StringBuilder();
+        int i = 0;
         for (byte b : bytes) {
-            sb.append(String.format("%02X ", b));
+            i++;
+            if (i < bytes.length) {
+                sb.append(String.format("%02X:", b));
+            }else {
+                sb.append(String.format("%02X", b));
+            }
         }
         return sb.toString();
     }
@@ -307,12 +318,18 @@ public class TCPUtil {
         return l;
     }
 
-    public static int holidays() {
+    /**
+     * Formula:
+     * work days after this day i.e. 1 + extra 3 working days
+     *
+     * @return number of days to offset
+     */
+    public static int countWorkDays() {
         List<LocalDate> hds = holidayDates();
         LocalDate date = LocalDate.now(ZoneId.of("Africa/Dar_es_Salaam"));
         int workDay = 0;
         int add = 0;
-        while (workDay < 3) {
+        while (workDay < 4) {
             if (isWorkDay(date, hds)) {
                 workDay++;
             } else {

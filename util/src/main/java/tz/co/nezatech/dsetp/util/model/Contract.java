@@ -26,8 +26,8 @@ public class Contract {
             System.out.println("Use custom " + expireDays + " 3 days");
             daysOffset = Integer.parseInt(expireDays);
         } else {
-            System.out.println("Use default 3 days + holiday/weekends");
-            daysOffset = 3 + TCPUtil.holidays();
+            System.out.println("Use default 3 days + working days");
+            daysOffset = 3 + TCPUtil.countWorkDays();
         }
         logger.debug("Days Offset: " + daysOffset);
         System.out.println("Days Offset: " + daysOffset);

@@ -118,6 +118,7 @@ class ClientMessageProcessor {
         if (client.appState == 0) {//Just connected
             if (type == MessageType.DAILY_KEY) {
                 client.appState = 1;
+
                 //send login message
                 client.sendLogin(msg, output);
                 logger.debug(">> Login message sent");
@@ -136,6 +137,7 @@ class ClientMessageProcessor {
             } else if (type == MessageType.ACK_ERROR || msgText.contains(invalidPwdText)) {
                 logger.error("<< Login failed: " + new String(msg));
                 client.appState = 0;//Login fail
+                MsgSequencer.reset();
                 client.restartApp(60);
             } else {
                 logger.debug("<< Login status unknown: " + type);

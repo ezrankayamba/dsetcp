@@ -34,7 +34,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 public class RunClient extends MessageReader {
-    private Logger logger = LoggerFactory.getLogger(RunClient.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(RunClient.class.getName());
     Config conCfg;
 
 
@@ -46,6 +46,7 @@ public class RunClient extends MessageReader {
     public RunClient() {
         super();
         String profile = System.getenv("profile");
+        LOGGER.debug("App is running as: " + profile);
         if (profile != null && !profile.trim().isEmpty() && profile.trim().equalsIgnoreCase("test")) {
             conCfg = ConnectionConfig.get("client-test.cfg");
         } else {
@@ -76,26 +77,26 @@ public class RunClient extends MessageReader {
 
     void stopAppDueToFailure(String msg) {
         System.err.println(msg);
-        logger.error(msg);
+        LOGGER.error(msg);
         ConnectionPool.dataSource().close();
         System.exit(-1);
     }
 
     private void init() {
-        logger.debug(String.format("Starting TCP/IP connection -> %s:%s", ip, port));
+        LOGGER.debug(String.format("Starting TCP/IP connection -> %s:%s", ip, port));
         try {
             try (final Socket con = new Socket(ip, Integer.parseInt(port))) {
-                logger.debug(String.format("Successfully connected to server. IP: %s, Port: %s. ", ip, port));
+                LOGGER.debug(String.format("Successfully connected to server. IP: %s, Port: %s. ", ip, port));
                 while (true) {
                     try {
                         InputStream input = con.getInputStream();
                         int avail = input.available();
                         if (avail != 0) {
-                            logger.debug("Some data to read: " + avail);
+                            LOGGER.debug("Some data to read: " + avail);
                             readMessage("0", input, con.getOutputStream());
                         }
                     } catch (Exception e) {
-                        logger.error("Exception(main): " + e.getMessage());
+                        LOGGER.error("Exception(main): " + e.getMessage());
                         e.printStackTrace();
                         int pause = 60;
                         restartApp(pause);
@@ -105,14 +106,14 @@ public class RunClient extends MessageReader {
                 }
             }
         } catch (IOException ex) {
-            logger.error(ex.getMessage());
+            LOGGER.error(ex.getMessage());
             ex.printStackTrace();
             restartApp(60);
         }
     }
 
     void restartApp(int pause) {
-        logger.debug("App will try to re-initiate this connection in " + pause + " seconds");
+        LOGGER.debug("App will try to re-initiate this connection in " + pause + " seconds");
         pause(pause);
         init();
     }
@@ -120,18 +121,18 @@ public class RunClient extends MessageReader {
     @Override
     public void process(byte[] fullMsg, String id, byte[] mh, byte[] msg, OutputStream output) {
         if (msg == null) {
-            logger.debug("<< Empty message, could be a heartbeat");
+            LOGGER.debug("<< Empty message, could be a heartbeat");
             return;
         }
         int seqNo = TCPUtil.seqNo(mh);
         String username = TCPUtil.getUsername(mh).trim();
         String userNo = TCPUtil.getUserNo(mh).trim();
         String time = TCPUtil.getTime(mh);
-        logger.debug(String.format("<< Message Header | SeqNo: %d, Username: %s, UserNo: %s, Time: %s", seqNo, username, userNo, time));
-        logger.debug("<< Message(HEX): " + TCPUtil.text(msg));
+        LOGGER.debug(String.format("<< Message Header | SeqNo: %d, Username: %s, UserNo: %s, Time: %s", seqNo, username, userNo, time));
+        LOGGER.debug("<< Message(HEX): " + TCPUtil.text(msg));
         MessageType type = MessageType.byType(mh[28]);
-        logger.debug("App FSMState: " + appState);
-        logger.debug("<< MessageType: " + type);
+        LOGGER.debug("App FSMState: " + appState);
+        LOGGER.debug("<< MessageType: " + type);
         ClientMessageProcessor.process(this, type, fullMsg, msg, output);
     }
 
@@ -143,14 +144,14 @@ public class RunClient extends MessageReader {
 
     void enableHeartbeat(OutputStream output) {
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        logger.debug("Market is open");
+        LOGGER.debug("Market is open");
         final Runnable hb = () -> {
-            logger.info(">> Sending heartbeat");
+            LOGGER.info(">> Sending heartbeat");
             ClientMessageProcessor.sendMessage(conCfg, "".getBytes(), MessageType.HEART_BEAT_CLT, output);
         };
         scheduler.scheduleAtFixedRate(hb, 60, 60, SECONDS);
         scheduler.scheduleAtFixedRate(() -> {
-                    logger.debug("Market is closing, requesting MTM Data");
+                    LOGGER.debug("Market is closing, requesting MTM Data");
                     byte[] date = TCPUtil.dateNow(0);
 
                     byte[] startOfDayDownload = new byte[24];
@@ -167,7 +168,7 @@ public class RunClient extends MessageReader {
                 }, delay(15, 05, 0),
                 24 * 60 * 60, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(() -> {
-                    logger.debug("Market is closing, Log out");
+                    LOGGER.debug("Market is closing, Log out");
                     ClientMessageProcessor.sendMessage(conCfg, "".getBytes(), MessageType.LOG_OUT, output);
 
                     //stop the scheduler for today
@@ -181,7 +182,7 @@ public class RunClient extends MessageReader {
     private void marketClosed() {
         final ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
         scheduler2.scheduleAtFixedRate(() -> {
-                    logger.debug("Market is open now");
+                    LOGGER.debug("Market is open now");
                     appState = -1;
                     scheduler2.shutdownNow();
                     restartApp(60);
@@ -203,7 +204,7 @@ public class RunClient extends MessageReader {
 
     private TCPMessage login(byte[] key) {
         try {
-            logger.debug("Key");
+            LOGGER.debug("Key: " + TCPUtil.text(key));
             String pwd = conCfg.getProperty("sender.password");
             byte[] encrypt = RSAUtil.encryptFromXmlKey(pwd, new String(key));
             byte[] loginMsg = new byte[encrypt.length + 4];
@@ -211,7 +212,7 @@ public class RunClient extends MessageReader {
             System.arraycopy(encrypt, 0, loginMsg, 4, encrypt.length);
             return ClientMessageProcessor.frmConfig(conCfg, loginMsg, MessageType.LOGIN);
         } catch (Exception e) {
-            logger.error("Exception: " + e.getMessage());
+            LOGGER.error("Exception: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -225,20 +226,20 @@ public class RunClient extends MessageReader {
         try {
             HikariDataSource ds = ConnectionPool.dataSource();
             try (Connection con = ds.getConnection()) {
-                logger.debug("Logging incoming message");
+                LOGGER.debug("Logging incoming message");
                 PreparedStatement s = con.prepareStatement("INSERT INTO agm_message (msg_type, msg_direction, msg_details) VALUES (?, ?, ?)");
                 s.setString(1, type.toString());
                 s.setString(2, "FROM_SVR");
                 s.setString(3, text);
 
                 int records = s.executeUpdate();
-                logger.debug(String.format("Logged %d message(s)", records));
+                LOGGER.debug(String.format("Logged %d message(s)", records));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
         super.process(baos, output);
     }

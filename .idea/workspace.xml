@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1e246dd9-d923-4f3b-81a6-bb8b75378329" name="Default" comment="Automated market Schedule and restart">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jetbrains_annotations_16_0_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.iml" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/ClientMessageProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/ClientMessageProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/MsgSequencer.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/MsgSequencer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/RunClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/RunClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/ClientFSM.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/ClientFSM.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMLoginManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMLoginManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMTCPWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMTCPWriter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/resources/client.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/client.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/resources/db.properties" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/db.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/resources/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/log4j.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/tz/co/nezatech/dsetcp/server/RunServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/tz/co/nezatech/dsetcp/server/RunServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/resources/server.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/resources/server.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RSAKeyValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RSAKeyValue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RSAUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RSAUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TCPUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TCPUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TestApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TestApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/model/Contract.java" beforeDir="false" afterPath="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/model/Contract.java" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/target/" />
+    <ignored path="$PROJECT_DIR$/util/target/" />
+    <ignored path="$PROJECT_DIR$/client/target/" />
+    <ignored path="$PROJECT_DIR$/server/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>print</find>
+      <find>date</find>
+      <find>Appl</find>
+      <find>-1</find>
+      <find>enableHeartbeat</find>
+      <find>INSERT</find>
+      <find>update</find>
+      <find>time</find>
+      <find>onSu</find>
+      <find>TCPConnectionException</find>
+      <find>TO_SVR</find>
+      <find>FROM_SVR</find>
+      <find>FROM_</find>
+      <find>F</find>
+    </findStrings>
+    <dirStrings>
+      <dir>D:\DevProjects\PERSONAL\Java\dsetcp</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/T.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/TCPMessage.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/MessageHandler.java" />
+        <option value="$PROJECT_DIR$/client/src/main/resources/client-test.cfg" />
+        <option value="$PROJECT_DIR$/server/src/main/resources/log4j.properties" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/db/DbConnectionPool.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/db/T.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/db/HikariCPEx.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/db/ConnectionPool.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RandomUtil.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/RequestHandler.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/MsgTypeHandler.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/MsgType36Handler.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/MarketDataType.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/MessageReader.java" />
+        <option value="$PROJECT_DIR$/util/pom.xml" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/WitchEndianHandler.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/MyHttpHandler.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/MsgReadHandler.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/GZipUtil.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TestConsts.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/OrderAction.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/FutureContractSubscription.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/MessageType.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/ClientFSM.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/State.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/TCPReader.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/InMessage.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMState.java" />
+        <option value="$PROJECT_DIR$/client/pom.xml" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMTCPReader.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/StreamSectionsHandler.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/StartOfDayDownload.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMTCPSessionHandler.java" />
+        <option value="$PROJECT_DIR$/client/src/main/resources/log4j.properties" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/model/Contract.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMProcessor.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/MsgSequencer.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMLoginManager.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/ClientMessageProcessor.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/RunClient.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TCPUtil.java" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TestApp.java" />
+        <option value="$PROJECT_DIR$/server/src/main/resources/server.cfg" />
+        <option value="$PROJECT_DIR$/client/src/main/resources/db.properties" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RSAKeyValue.java" />
+        <option value="$PROJECT_DIR$/client/src/main/resources/client.cfg" />
+        <option value="$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RSAUtil.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMTCPWriter.java" />
+        <option value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/ClientFSM.java" />
+        <option value="$PROJECT_DIR$/server/src/main/java/tz/co/nezatech/dsetcp/server/RunServer.java" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="dsetcp" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="dsetcp" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+      </expand>
+      <select />
+    </treeState>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="800" />
+    <option name="width" value="800" />
+    <option name="height" value="860" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="dsetcp" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dsetcp" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1535705406741" />
+    <property name="extract.method.default.visibility" value="public" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\DevProjects\PERSONAL\Java\dsetcp\server\src\main\resources" />
+      <recent name="D:\DevProjects\PERSONAL\Java\dsetcp\client\src\main\resources" />
+      <recent name="D:\DevProjects\PERSONAL\Java\dsetcp\server\src\main\java\tz\co\nezatech\dsetcp\server" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="tz.co.nezatech.dsetcp.client.fsm" />
+      <recent name="tz.co.nezatech.dsetp.util.handler.http" />
+      <recent name="tz.co.nezatech.dsetp.util.message" />
+      <recent name="tz.co.nezatech.dsetcp.server" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="tz.co.nezatech.dsetcp.client.fsm" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.Run TCP Server">
+    <configuration name="ClientFSM" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="tz.co.nezatech.dsetcp.client.fsm.ClientFSM" />
+      <module name="client" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tz.co.nezatech.dsetcp.client.fsm.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MsgSequencer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="tz.co.nezatech.dsetcp.client.MsgSequencer" />
+      <module name="client" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tz.co.nezatech.dsetcp.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Run TCP Client" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="10" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="tz.co.nezatech.dsetcp.client.fsm.ClientFSM" />
+      <module name="client" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Run TCP Server" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="10" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="tz.co.nezatech.dsetcp.server.RunServer" />
+      <module name="server" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RunClient" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="tz.co.nezatech.dsetcp.client.RunClient" />
+      <module name="client" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tz.co.nezatech.dsetcp.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TCPUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="tz.co.nezatech.dsetp.util.TCPUtil" />
+      <module name="util" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tz.co.nezatech.dsetp.util.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="tz.co.nezatech.dsetp.util.TestApp" />
+      <module name="util" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tz.co.nezatech.dsetp.util.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Run TCP Client" />
+      <item itemvalue="Application.Run TCP Server" />
+      <item itemvalue="Application.TCPUtil" />
+      <item itemvalue="Application.TestApp" />
+      <item itemvalue="Application.MsgSequencer" />
+      <item itemvalue="Application.ClientFSM" />
+      <item itemvalue="Application.RunClient" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.TestApp" />
+        <item itemvalue="Application.RunClient" />
+        <item itemvalue="Application.ClientFSM" />
+        <item itemvalue="Application.MsgSequencer" />
+        <item itemvalue="Application.TCPUtil" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1e246dd9-d923-4f3b-81a6-bb8b75378329" name="Default" comment="" />
+      <created>1530428145878</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1530428145878</updated>
+      <workItem from="1530428152642" duration="37114000" />
+      <workItem from="1530510209541" duration="797000" />
+      <workItem from="1530551939164" duration="3359000" />
+      <workItem from="1530596288814" duration="16521000" />
+      <workItem from="1530685554828" duration="5670000" />
+      <workItem from="1530730002969" duration="20059000" />
+      <workItem from="1530949931005" duration="9572000" />
+      <workItem from="1530975310138" duration="13525000" />
+      <workItem from="1531042150827" duration="1623000" />
+      <workItem from="1531063610758" duration="731000" />
+      <workItem from="1531064383045" duration="2588000" />
+      <workItem from="1531115384898" duration="147000" />
+      <workItem from="1531133793115" duration="673000" />
+      <workItem from="1531244130597" duration="1189000" />
+      <workItem from="1531389556271" duration="15836000" />
+      <workItem from="1531501272906" duration="1431000" />
+      <workItem from="1531503051770" duration="27000" />
+      <workItem from="1531743034229" duration="1286000" />
+      <workItem from="1532410769292" duration="8456000" />
+      <workItem from="1532524713587" duration="2873000" />
+      <workItem from="1532627923544" duration="597000" />
+      <workItem from="1532628849740" duration="4438000" />
+      <workItem from="1532672124064" duration="15233000" />
+      <workItem from="1532764438481" duration="1160000" />
+      <workItem from="1532775358887" duration="309000" />
+      <workItem from="1533105330961" duration="6296000" />
+      <workItem from="1533282645326" duration="9396000" />
+      <workItem from="1533468512613" duration="716000" />
+      <workItem from="1533471727539" duration="60000" />
+      <workItem from="1533471817062" duration="21581000" />
+      <workItem from="1533545193221" duration="29267000" />
+      <workItem from="1533619125558" duration="45219000" />
+      <workItem from="1533728849600" duration="12018000" />
+      <workItem from="1533821415703" duration="4344000" />
+      <workItem from="1533840601926" duration="5506000" />
+      <workItem from="1533895800724" duration="2260000" />
+      <workItem from="1533972145939" duration="4007000" />
+      <workItem from="1533984430324" duration="45000" />
+      <workItem from="1534066907089" duration="604000" />
+      <workItem from="1534093467184" duration="492000" />
+      <workItem from="1534173540539" duration="2219000" />
+      <workItem from="1534241034709" duration="933000" />
+      <workItem from="1534266517145" duration="6402000" />
+      <workItem from="1534341752711" duration="2417000" />
+      <workItem from="1534407953243" duration="2659000" />
+      <workItem from="1534484987615" duration="607000" />
+      <workItem from="1534576840039" duration="7700000" />
+      <workItem from="1534616040343" duration="72000" />
+      <workItem from="1534685062507" duration="9111000" />
+      <workItem from="1534747552211" duration="10533000" />
+      <workItem from="1534772980908" duration="2599000" />
+      <workItem from="1534778067390" duration="13320000" />
+      <workItem from="1534956450376" duration="200000" />
+      <workItem from="1535186733486" duration="14038000" />
+      <workItem from="1535269239891" duration="10252000" />
+      <workItem from="1535360190451" duration="1173000" />
+      <workItem from="1535512090983" duration="432000" />
+      <workItem from="1535512564430" duration="268000" />
+      <workItem from="1535520621622" duration="4781000" />
+      <workItem from="1535644888702" duration="71000" />
+      <workItem from="1535645133244" duration="383000" />
+      <workItem from="1535700558681" duration="2633000" />
+      <workItem from="1536505922377" duration="437000" />
+      <workItem from="1536506555578" duration="183000" />
+      <workItem from="1536574785335" duration="126000" />
+      <workItem from="1555147783229" duration="1304000" />
+      <workItem from="1555321241039" duration="923000" />
+      <workItem from="1555334237995" duration="13314000" />
+      <workItem from="1555359243399" duration="672000" />
+      <workItem from="1555432875832" duration="6720000" />
+      <workItem from="1555440050320" duration="4955000" />
+      <workItem from="1556204835118" duration="1071000" />
+      <workItem from="1556812330905" duration="234000" />
+      <workItem from="1556813159906" duration="2509000" />
+      <workItem from="1556865765856" duration="14037000" />
+      <workItem from="1556893114694" duration="1431000" />
+      <workItem from="1556975548237" duration="9192000" />
+      <workItem from="1557132041343" duration="11007000" />
+    </task>
+    <task id="LOCAL-00001" summary="DSE TCP IP Integration 1st commit">
+      <created>1530468243961</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1530468243961</updated>
+    </task>
+    <task id="LOCAL-00002" summary="DSE TCP IP Integration 1st commit">
+      <created>1530468424076</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1530468424076</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added Login message">
+      <created>1530637419631</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1530637419631</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Updated readme accordingly">
+      <created>1530637732071</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1530637732071</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Fixed Login issue, Added download request messages">
+      <created>1530989406307</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1530989406307</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Fix of message 99, now does not return error">
+      <created>1532637820551</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1532637820551</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Working messages. 36 sending, 36 receiving, 99 sending, 99 receiving &amp; 59 receiving">
+      <created>1533826441646</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1533826441646</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Added market cap, and updated the dates recorded for msg 36. Also, added logout mechanism when market closes">
+      <created>1534583364301</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1534583364301</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Automated market Schedule and restart">
+      <created>1535512781962</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1535512781962</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="467943000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
+    <layout>
+      <window_info id="Designer" order="0" />
+      <window_info id="Image Layers" order="1" />
+      <window_info id="UI Designer" order="2" />
+      <window_info id="Favorites" order="3" side_tool="true" />
+      <window_info id="Web" order="4" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="5" visible="true" weight="0.20051414" />
+      <window_info id="Structure" order="6" side_tool="true" weight="0.25" />
+      <window_info id="Capture Tool" order="7" />
+      <window_info anchor="bottom" id="Messages" order="0" weight="0.32839838" />
+      <window_info anchor="bottom" id="Terminal" order="1" visible="true" weight="0.43682796" />
+      <window_info anchor="bottom" id="Java Enterprise" order="2" />
+      <window_info anchor="bottom" id="Database Changes" order="3" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Spring" order="4" />
+      <window_info anchor="bottom" id="Version Control" order="5" weight="0.32882273" />
+      <window_info anchor="bottom" id="Message" order="6" />
+      <window_info anchor="bottom" id="Find" order="7" weight="0.32839838" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.32974428" />
+      <window_info anchor="bottom" id="Run" order="9" weight="0.3655914" />
+      <window_info anchor="bottom" id="Debug" order="10" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="11" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="12" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="13" />
+      <window_info anchor="bottom" id="Docker" order="14" />
+      <window_info anchor="right" id="Maven Projects" order="0" visible="true" weight="0.14717224" />
+      <window_info anchor="right" id="Capture Analysis" order="1" />
+      <window_info anchor="right" id="Database" order="2" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info anchor="right" id="Theme Preview" order="4" />
+      <window_info anchor="right" id="Bean Validation" order="5" />
+      <window_info anchor="right" id="Palette" order="6" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="7" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Flutter Inspector" order="8" />
+      <window_info anchor="right" id="Flutter Outline" order="9" />
+      <window_info anchor="right" id="Ant Build" order="10" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="11" weight="0.25" />
+      <window_info anchor="right" id="Maven" order="12" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="Designer" order="0" />
+      <window_info id="Image Layers" order="1" />
+      <window_info id="UI Designer" order="2" />
+      <window_info id="Favorites" order="3" side_tool="true" />
+      <window_info id="Web" order="4" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="5" visible="true" weight="0.21529563" />
+      <window_info id="Structure" order="6" side_tool="true" weight="0.25" />
+      <window_info id="Capture Tool" order="7" />
+      <window_info anchor="bottom" id="Messages" order="0" weight="0.32839838" />
+      <window_info anchor="bottom" id="Terminal" order="1" weight="0.32882273" />
+      <window_info anchor="bottom" id="Java Enterprise" order="2" />
+      <window_info anchor="bottom" id="Database Changes" order="3" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Spring" order="4" />
+      <window_info anchor="bottom" id="Version Control" order="5" weight="0.32882273" />
+      <window_info anchor="bottom" id="Message" order="6" />
+      <window_info anchor="bottom" id="Find" order="7" weight="0.32839838" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.32974428" />
+      <window_info anchor="bottom" id="Run" order="9" visible="true" weight="0.33647376" />
+      <window_info anchor="bottom" id="Debug" order="10" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="11" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="12" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="13" />
+      <window_info anchor="right" id="Maven Projects" order="0" visible="true" weight="0.14717224" />
+      <window_info anchor="right" id="Capture Analysis" order="1" />
+      <window_info anchor="right" id="Database" order="2" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info anchor="right" id="Theme Preview" order="4" />
+      <window_info anchor="right" id="Bean Validation" order="5" />
+      <window_info anchor="right" id="Palette" order="6" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="7" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Flutter Inspector" order="8" />
+      <window_info anchor="right" id="Flutter Outline" order="9" />
+      <window_info anchor="right" id="Ant Build" order="10" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="11" weight="0.25" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="DSE TCP IP Integration 1st commit" />
+    <MESSAGE value="Added Login message" />
+    <MESSAGE value="Updated readme accordingly" />
+    <MESSAGE value="Fixed Login issue, Added download request messages" />
+    <MESSAGE value="Fix of message 99, now does not return error" />
+    <MESSAGE value="Working messages. 36 sending, 36 receiving, 99 sending, 99 receiving &amp; 59 receiving" />
+    <MESSAGE value="Added market cap, and updated the dates recorded for msg 36. Also, added logout mechanism when market closes" />
+    <MESSAGE value="Automated market Schedule and restart" />
+    <option name="LAST_COMMIT_MESSAGE" value="Automated market Schedule and restart" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/client/src/main/resources/simplelogger.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="43" selection-start-line="5" selection-start-column="43" selection-end-line="5" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/src/main/resources/log4j.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="39" selection-start-line="5" selection-start-column="39" selection-end-line="5" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/db/DbConnectionPool.java" />
+    <entry file="jar://$MAVEN_REPOSITORY$/com/zaxxer/HikariCP/2.5.1/HikariCP-2.5.1.jar!/com/zaxxer/hikari/HikariDataSource.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="158">
+          <caret line="29" column="11" selection-start-line="29" selection-start-column="11" selection-end-line="29" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/zaxxer/HikariCP/2.5.1/HikariCP-2.5.1.jar!/com/zaxxer/hikari/HikariConfig.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="90" column="45" selection-start-line="90" selection-start-column="35" selection-end-line="90" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/db/ConnectionPool.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="24" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RandomUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="74" selection-start-line="12" selection-start-column="74" selection-end-line="12" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/MsgTypeHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="473">
+          <caret line="50" column="21" selection-start-line="50" selection-start-column="21" selection-end-line="50" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/SwitchEndianHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="13" lean-forward="true" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/RequestHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/MyHttpHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="41">
+          <caret line="58" column="27" selection-start-line="58" selection-start-column="27" selection-end-line="58" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/MsgReadHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="29" column="35" selection-start-line="29" selection-start-column="35" selection-end-line="29" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/GZipUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="28" column="9" selection-start-line="28" selection-start-column="9" selection-end-line="28" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TestConsts.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21063">
+          <caret line="97" column="44" selection-start-line="97" selection-start-column="44" selection-end-line="97" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/OrderAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="27" column="47" selection-start-line="27" selection-start-column="47" selection-end-line="27" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-10.0.1/lib/src.zip!/java.base/java/time/ZonedDateTime.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="139">
+          <caret line="1426" column="25" selection-start-line="1426" selection-start-column="25" selection-end-line="1426" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/MarketDataType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="11" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/resources/client.properties">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/InMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="39" column="48" selection-start-line="39" selection-start-column="48" selection-end-line="39" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="10" lean-forward="true" selection-start-line="19" selection-start-column="10" selection-end-line="19" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMTCPReader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="34" column="46" selection-start-line="34" selection-start-column="46" selection-end-line="34" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/FutureContractSubscription.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="367">
+          <caret line="303" column="86" lean-forward="true" selection-start-line="302" selection-start-column="16" selection-end-line="303" selection-end-column="86" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/handler/http/StreamSectionsHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="24" column="46" selection-start-line="24" selection-start-column="46" selection-end-line="24" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/StartOfDayDownload.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="22" column="43" selection-start-line="22" selection-start-column="43" selection-end-line="22" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/MessageType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="12" selection-start-line="2" selection-start-column="12" selection-end-line="2" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/model/Contract.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="45" lean-forward="true" selection-start-line="10" selection-start-column="45" selection-end-line="10" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-10.0.1/lib/src.zip!/java.base/java/lang/System.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="508" column="41" lean-forward="true" selection-start-line="508" selection-start-column="41" selection-end-line="508" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/RunClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3026">
+          <caret line="208" column="43" selection-start-line="208" selection-start-column="43" selection-end-line="208" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/MessageReader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="850">
+          <caret line="57" column="9" selection-start-line="57" selection-start-column="9" selection-end-line="57" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/ClientMessageProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1802">
+          <caret line="122" column="27" selection-start-line="122" selection-start-column="27" selection-end-line="122" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="40" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMTCPSessionHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/MessageHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="6" column="20" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="36" selection-start-line="36" selection-end-line="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/resources/log4j.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="31" selection-start-line="14" selection-start-column="31" selection-end-line="14" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMLoginManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="23" column="28" selection-start-line="23" selection-start-column="28" selection-end-line="23" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/src/main/resources/server.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="260" selection-start-line="10" selection-start-column="260" selection-end-line="10" selection-end-column="260" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/message/TCPMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="14" column="18" lean-forward="true" selection-start-line="14" selection-start-column="18" selection-end-line="14" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/resources/db.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="32" selection-start-line="7" selection-start-column="32" selection-end-line="7" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/MsgSequencer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="19" column="41" selection-start-line="19" selection-start-column="41" selection-end-line="19" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TCPUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#5314#5315#0" expanded="true" />
+            <element signature="e#5381#5382#0" expanded="true" />
+            <element signature="e#7204#7205#0" expanded="true" />
+            <element signature="e#7264#7265#0" expanded="true" />
+            <element signature="e#8275#8276#0" expanded="true" />
+            <element signature="e#8329#8330#0" expanded="true" />
+            <element signature="e#8376#8377#0" expanded="true" />
+            <element signature="e#8431#8432#0" expanded="true" />
+            <element signature="e#8783#8784#0" expanded="true" />
+            <element signature="e#8840#8841#0" expanded="true" />
+            <element signature="e#11331#11332#0" expanded="true" />
+            <element signature="e#11393#11394#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/TestApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RSAKeyValue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="17" column="5" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/resources/client.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" selection-start-line="7" selection-end-line="7" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/FSMTCPWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="339">
+          <caret line="61" column="123" selection-start-line="61" selection-start-column="123" selection-end-line="61" selection-end-column="123" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/main/java/tz/co/nezatech/dsetp/util/RSAUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-346">
+          <caret line="108" column="71" lean-forward="true" selection-start-line="106" selection-start-column="12" selection-end-line="108" selection-end-column="71" />
+          <folding>
+            <element signature="e#5084#5085#0" expanded="true" />
+            <element signature="e#5134#5135#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/src/main/java/tz/co/nezatech/dsetcp/client/fsm/ClientFSM.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="35" column="31" lean-forward="true" selection-start-line="35" selection-start-column="31" selection-end-line="35" selection-end-column="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2571#2572#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/src/main/java/tz/co/nezatech/dsetcp/server/RunServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="61" column="44" lean-forward="true" selection-start-line="61" selection-start-column="44" selection-end-line="61" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>Spring</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>10</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>util</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>10</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Maven: ch.qos.logback:logback-classic:1.2.3</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

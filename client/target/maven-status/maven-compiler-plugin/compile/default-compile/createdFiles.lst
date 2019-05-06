@@ -1,0 +1,15 @@
+tz\co\nezatech\dsetcp\client\fsm\InMessage.class
+tz\co\nezatech\dsetcp\client\Tester.class
+tz\co\nezatech\dsetcp\client\fsm\FSMTCPSessionHandler.class
+tz\co\nezatech\dsetcp\client\ClientMessageProcessor.class
+tz\co\nezatech\dsetcp\client\MsgSequencer.class
+tz\co\nezatech\dsetcp\client\fsm\FSMState.class
+tz\co\nezatech\dsetcp\client\fsm\FSMTCPWriter.class
+tz\co\nezatech\dsetcp\client\fsm\FSMLoginManager.class
+tz\co\nezatech\dsetcp\client\fsm\ClientFSM.class
+tz\co\nezatech\dsetcp\client\RunClient.class
+tz\co\nezatech\dsetcp\client\fsm\FSMTCPReader.class
+tz\co\nezatech\dsetcp\client\fsm\FSMProcessor.class
+tz\co\nezatech\dsetcp\client\fsm\FSMTCPSessionHandler$FSMSessionEventListener.class
+tz\co\nezatech\dsetcp\client\fsm\FSMProcessor$1.class
+tz\co\nezatech\dsetcp\client\fsm\ClientFSM$SessionEstablishedListener.class
